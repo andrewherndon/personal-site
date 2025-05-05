@@ -1,0 +1,249 @@
+@import "tailwindcss";
+
+:root {
+  --background: #8B2323; /* Deeper crimson background */
+  --card-bg: #721c1c;    /* Darker red for card backgrounds */
+  --foreground: #FFFFFF; /* White text */
+  --gold: #dbc783;      /* Rich gold accent color */
+  --gold-shadow: rgba(0, 0, 0, 0.75); /* Shadow for gold text */
+  --text: #FFFFFF;      /* White text */
+  --text-alt: #000000;  /* Alternative black text for contrast */
+  
+  --card: var(--card-bg);
+  --card-foreground: #FFFFFF;
+  
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #171717;
+  
+  --primary: #171717;
+  --primary-foreground: #FFFFFF;
+  
+  --secondary: #f3f4f6;
+  --secondary-foreground: #171717;
+  
+  --muted: #f3f4f6;
+  --muted-foreground: #737373;
+  
+  --accent: #f3f4f6;
+  --accent-foreground: #171717;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #FFFFFF;
+  
+  --radius: 0.75rem; /* Increased border radius for more rounded elements */
+  
+  /* Font family variables */
+  --font-family-sans: 'Roboto', system-ui, sans-serif;
+  --font-family-heading: 'Roboto', system-ui, sans-serif;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  
+  --card: #0a0a0a;
+  --card-foreground: #ededed;
+  
+  --border: #262626;
+  --input: #262626;
+  --ring: #d4d4d4;
+  
+  --primary: #ededed;
+  --primary-foreground: #0a0a0a;
+  
+  --secondary: #262626;
+  --secondary-foreground: #ededed;
+  
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  
+  --accent: #262626;
+  --accent-foreground: #ededed;
+  
+  --destructive: #7f1d1d;
+  --destructive-foreground: #ededed;
+}
+
+* {
+  border-color: var(--border);
+  outline-color: var(--ring);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-family-sans);
+  line-height: 1.5;
+}
+
+.heading-accent {
+  color: var(--gold);
+  text-shadow: 4px 4px 0px var(--gold-shadow);
+  font-weight: 700;
+  font-family: var(--font-family-heading);
+}
+
+.btn-shadow {
+  box-shadow: 4px 4px 0px var(--gold-shadow);
+}
+
+.rounded-card {
+  background-color: var(--card-bg);
+  color: var(--foreground);
+  padding: 1.75rem;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+  border: none;
+}
+
+.container-rounded {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* Navigation styling */
+nav {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link {
+  transition: all 0.3s ease;
+  border-radius: 0.75rem;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background-color: rgba(212, 175, 55, 0.2);
+  color: var(--gold);
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: var(--gold);
+  color: var(--background);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.3s ease;
+  border: 2px solid var(--gold);
+  box-shadow: 4px 4px 0px var(--gold-shadow);
+}
+
+.btn-primary:hover {
+  background-color: var(--gold);
+  color: var(--background);
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0px var(--gold-shadow);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--foreground);
+  border: 2px solid var(--gold);
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 0px var(--gold-shadow);
+}
+
+.btn-outline:hover {
+  background-color: var(--gold);
+  color: var(--background);
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0px var(--gold-shadow);
+}
+
+/* Card styling */
+.card {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+  border: none;
+  transition: transform 0.2s ease-in-out;
+  background-color: var(--card-bg);
+}
+
+.card-header {
+  background-color: var(--background);
+  padding: 1.5rem;
+}
+
+.card-body {
+  background-color: var(--card-bg);
+  color: white;
+  padding: 1.5rem;
+}
+
+.card-title {
+  color: var(--gold);
+  text-shadow: 4px 4px 0px var(--gold-shadow);
+  font-weight: 700;
+}
+
+/* Badge styling */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: var(--gold);
+  color: var(--background);
+}
+
+/* Form elements */
+input, textarea {
+  border-radius: 0.75rem;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  width: 100%;
+  transition: border-color 0.3s ease;
+  font-family: var(--font-family-sans);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--gold);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* Footer styling */
+footer {
+  background-color: rgba(139, 35, 35, 0.95);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+footer a {
+  color: var(--gold);
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+
+/* Hero section with profile */
+.hero-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.profile-container {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.profile-image {
+  border-radius: 50%;
+  border: 4px solid var(--gold);
+  box-shadow: 4px 4px 0px var(--gold-shadow);
+}
