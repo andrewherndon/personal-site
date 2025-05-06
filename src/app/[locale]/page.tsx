@@ -10,7 +10,7 @@ import {
 	Code,
 	ExternalLink,
 } from "lucide-react";
-import profilePic from "../../public/images/profile.jpg"; // Adjust the path as needed
+import profilePic from "../../../public/images/profile.jpg"; // Adjust the path as needed
 import { Var } from "gt-next";
 import { T } from "gt-next";
 
