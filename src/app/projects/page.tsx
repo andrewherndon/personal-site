@@ -1,7 +1,7 @@
 // app/projects/page.tsx
 import { ProjectCard } from "@/components/projects/project-card";
 import { projects } from "@/data/projects";
-import { T } from "gt-next";
+import { T, Var } from "gt-next";
 
 export default function ProjectsPage() {
 	return (
@@ -13,9 +13,11 @@ export default function ProjectsPage() {
 
 				<div className="bg-background/98 p-10 rounded-2xl shadow-xl">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+						<Var> 
 							{projects.map((project) => (
 								<ProjectCard key={project.id} {...project} />
 							))}
+						</Var>
 					</div>
 				</div>
 			</div>

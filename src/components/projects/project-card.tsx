@@ -40,19 +40,21 @@ export function ProjectCard({
 						<Var>{title}</Var>
 					</CardTitle>
 					<div className="text-white text-sm opacity-90 mt-1">
-						{date}
+						<Var>{date}</Var>
 					</div>
 				</CardHeader>
 				<CardContent className="bg-[var(--card-bg)] text-white pt-6 flex-grow">
 					<p className="mb-5">
-						{description}
+						<Var>{description}</Var>
 					</p>
 					<div className="mb-5">
 						<h4 className="font-semibold mb-3 text-gold">Highlights:</h4>
 						<ul className="list-disc pl-5 space-y-2 text-white/90">
+						<Var>
 							{highlights.map((item, index) => (
 								<li key={index}>{item}</li>
 							))}
+						</Var>
 						</ul>
 					</div>
 					<div className="flex flex-wrap gap-2 mt-5">

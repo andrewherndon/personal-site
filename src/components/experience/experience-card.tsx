@@ -32,16 +32,20 @@ export function ExperienceCard({
       </CardHeader>
       <CardContent className="bg-[var(--card-bg)] text-white pt-6">
         <ul className="list-disc pl-5 mb-6 space-y-3">
-          {description.map((item, index) => (
-            <li key={index} className="leading-relaxed">{item}</li>
-          ))}
+          <Var>
+            {description.map((item, index) => (
+              <li key={index} className="leading-relaxed">{item}</li>
+            ))}
+          </Var>
         </ul>
         <div className="flex flex-wrap gap-2 mt-5">
-          {technologies.map((tech, index) => (
-            <Badge key={index} className="bg-gold text-background hover:bg-gold/90 rounded-full px-3 py-1 font-medium">
-              <Var>{tech}</Var>
-            </Badge>
-          ))}
+          <Var>
+            {technologies.map((tech, index) => (
+              <Badge key={index} className="bg-gold text-background hover:bg-gold/90 rounded-full px-3 py-1 font-medium">
+                <Var>{tech}</Var>
+              </Badge>
+            ))}
+          </Var>
         </div>
       </CardContent>
     </Card>

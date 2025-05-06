@@ -1,7 +1,7 @@
 // app/experience/page.tsx
 import { ExperienceCard } from "@/components/experience/experience-card";
 import { experiences } from "@/data/experience";
-import { T } from "gt-next";
+import { T, Var } from "gt-next";
 
 export default function ExperiencePage() {
 	return (
@@ -11,9 +11,11 @@ export default function ExperiencePage() {
 					Work Experience
 				</h1>   
 				<div className=" p-10 rounded-2xl shadow-xl">
-						{experiences.map((exp) => (
-							<ExperienceCard key={exp.id} {...exp} />
-						))}
+                    <Var>
+                        {experiences.map((exp) => (
+                            <ExperienceCard key={exp.id} {...exp} />
+                        ))}
+                    </Var>
 				</div>
 			</div>
 		</T>
