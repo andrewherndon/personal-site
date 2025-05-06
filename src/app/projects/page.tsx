@@ -1,7 +1,7 @@
 // app/projects/page.tsx
 import { ProjectCard } from "@/components/projects/project-card";
 import { projects } from "@/data/projects";
-import { Var, T } from "gt-next";
+import { T } from "gt-next";
 
 export default function ProjectsPage() {
 	return (

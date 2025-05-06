@@ -74,13 +74,13 @@ export default function Home() {
 					<div className="flex flex-col gap-6">
 						<h2 className="heading-accent text-3xl font-bold">About Me</h2>
 						<p className="text-lg">
-							I'm a Computer Science student at Georgia Institute of Technology
+							I&apos;m a Computer Science student at Georgia Institute of Technology
 							with a focus on Intelligence and Devices. My experience includes
 							software engineering at Cisco Systems and founding a digital
 							marketing consultancy.
 						</p>
 						<p className="text-lg">
-							I'm passionate about developing intelligent systems that solve
+							I&apos;m passionate about developing intelligent systems that solve
 							real-world problems, with particular interests in machine
 							learning, natural language processing, and software development.
 						</p>

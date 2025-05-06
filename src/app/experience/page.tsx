@@ -1,7 +1,7 @@
 // app/experience/page.tsx
 import { ExperienceCard } from "@/components/experience/experience-card";
 import { experiences } from "@/data/experience";
-import { Var, T } from "gt-next";
+import { T } from "gt-next";
 
 export default function ExperiencePage() {
 	return (

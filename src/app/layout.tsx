@@ -3,7 +3,6 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/navigation/footer";
-import { T } from "gt-next";
 // Load Roboto font
 
 import { getLocale } from "gt-next/server";
