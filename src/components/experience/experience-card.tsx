@@ -39,7 +39,7 @@ export function ExperienceCard({
         <div className="flex flex-wrap gap-2 mt-5">
           {technologies.map((tech, index) => (
             <Badge key={index} className="bg-gold text-background hover:bg-gold/90 rounded-full px-3 py-1 font-medium">
-              {tech}
+              <Var>{tech}</Var>
             </Badge>
           ))}
         </div>

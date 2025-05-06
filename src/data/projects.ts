@@ -13,8 +13,8 @@ export const projects = [
         "Won 'Best Financial Hack' at HackPrinceton Spring 2025."
       ],
       links: {
-        github: "https://github.com/yourusername/roots-financial",
-        live: "https://roots-financial.vercel.app"
+        github: "https://github.com/Roots-Finance",
+        devpost: "https://devpost.com/software/roots-xk19te"
       }
     },
     {
@@ -30,7 +30,7 @@ export const projects = [
         "Received technical guidance on performance optimization and system architecture from industry professionals."
       ],
       links: {
-        github: "https://github.com/AI-GT/gt-rag-chatbot"
+        github: "https://github.com/aigatech"
       }
     },
     {
@@ -46,7 +46,7 @@ export const projects = [
         "Integrated Google Cloud Translate API and SpaCy NLP for accurate translations and natural language processing."
       ],
       links: {
-        github: "https://github.com/yourusername/linguality",
+        github: "https://github.com/andrewherndon/linguality",
         live: "https://linguality.app"
       }
     }

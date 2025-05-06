@@ -9,8 +9,7 @@ const Footer = () => {
 				<div className="container mx-auto px-6">
 					<div className="flex flex-col md:flex-row justify-between items-center">
 						<div className="text-white mb-6 md:mb-0 font-serif">
-							© <Var>{new Date().getFullYear()}</Var> Andrew Herndon. All rights
-							reserved.
+							© <Var>{new Date().getFullYear()} Andrew Herndon. </Var>All rights reserved.
 						</div>
 						<div className="flex flex-wrap justify-center gap-6">
 							<FooterLink href="/">Home</FooterLink>

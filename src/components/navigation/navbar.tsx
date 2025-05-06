@@ -10,7 +10,7 @@ const Navbar = () => {
 			<nav className="bg-background/95 backdrop-blur-sm sticky top-0 z-10 py-4 px-6 shadow-md">
 				<div className="container mx-auto flex justify-between items-center">
 					<div className="flex-grow-0">
-						<LocaleSelector />
+                        <LocaleSelector />
 					</div>
 
 					<div className="hidden md:flex space-x-2">

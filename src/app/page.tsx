@@ -171,7 +171,7 @@ export default function Home() {
 								</div>
 								<div className="flex gap-3">
 									<Link
-										href="https://github.com/yourusername/roots-financial"
+										href="https://github.com/Roots-Finance"
 										target="_blank"
 										rel="noopener noreferrer"
 									>
@@ -181,22 +181,20 @@ export default function Home() {
 										</Button>
 									</Link>
 									<Link
-										href="https://roots-financial.vercel.app"
+										href="https://devpost.com/software/roots-xk19te"
 										target="_blank"
 										rel="noopener noreferrer"
 									>
 										<Button className="bg-transparent border-2 border-gold text-gold hover:bg-gold hover:text-background rounded-xl btn-shadow">
 											<ExternalLink className="mr-2 h-5 w-5" />
-											Live Demo
+											Devpost
 										</Button>
 									</Link>
 								</div>
 							</div>
 							<div className="md:w-1/3 flex items-center justify-center">
 								{/* Project image placeholder */}
-								<div className="w-full h-48 bg-background/50 rounded-xl flex items-center justify-center border-2 border-gold shadow-xl">
-									<span className="text-gold">Project Image</span>
-								</div>
+								<Image src="/images/Roots_Logo.png" alt="Roots Financial Platform" width={500} height={500} className="rounded-xl border-4 border-gold object-cover shadow-lg" />
 							</div>
 						</div>
 					</div>

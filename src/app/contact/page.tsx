@@ -21,77 +21,9 @@ export default function ContactPage() {
 					Contact Me
 				</h1>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<Card className="rounded-xl overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.3)] border-0">
-						<CardHeader className="bg-background pb-4">
-							<CardTitle className="heading-accent text-2xl">
-								Get In Touch
-							</CardTitle>
-							<CardDescription className="text-white mt-2">
-								Fill out the form and I'll get back to you as soon as possible.
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="bg-[var(--card-bg)] text-white pt-8">
-							<form className="space-y-5">
-								<div>
-									<label
-										className="block text-white text-sm font-medium mb-2"
-										htmlFor="name"
-									>
-										Name
-									</label>
-									<Input
-										id="name"
-										placeholder="Your name"
-										className="rounded-lg border-gold/20 focus:border-gold focus:ring focus:ring-gold/20"
-									/>
-								</div>
-								<div>
-									<label
-										className="block text-white text-sm font-medium mb-2"
-										htmlFor="email"
-									>
-										Email
-									</label>
-									<Input
-										id="email"
-										type="email"
-										placeholder="your.email@example.com"
-										className="rounded-lg border-gold/20 focus:border-gold focus:ring focus:ring-gold/20"
-									/>
-								</div>
-								<div>
-									<label
-										className="block text-white text-sm font-medium mb-2"
-										htmlFor="message"
-									>
-										Message
-									</label>
-									<Textarea
-										id="message"
-										placeholder="Your message..."
-										className="min-h-[150px] rounded-lg border-gold/20 focus:border-gold focus:ring focus:ring-gold/20"
-									/>
-								</div>
-								<Button
-									type="submit"
-									className="w-full bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow py-6 font-medium text-lg"
-								>
-									Send Message
-								</Button>
-							</form>
-						</CardContent>
-					</Card>
+				<div className="flex justify-center">
 
-					<Card className="rounded-xl overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.3)] border-0">
-						<CardHeader className="bg-background pb-4">
-							<CardTitle className="heading-accent text-2xl">
-								Connect With Me
-							</CardTitle>
-							<CardDescription className="text-white mt-2">
-								Find me on these platforms
-							</CardDescription>
-						</CardHeader>
+					<Card className="rounded-xl overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.3)] border-0 w-3/4 max-w-4xl">
 						<CardContent className="bg-[var(--card-bg)] text-white pt-8">
 							<div className="space-y-5">
 								<Link
@@ -121,7 +53,7 @@ export default function ContactPage() {
 									</div>
 								</Link>
 								<Link
-									href="https://www.linkedin.com/in/andrewherndon"
+									href="https://www.linkedin.com/in/andrew-herndon-607304292"
 									target="_blank"
 									rel="noopener noreferrer"
 									className="flex items-center p-4 hover:bg-background/50 rounded-xl transition-colors border border-transparent hover:border-gold/20"
