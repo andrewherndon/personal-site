@@ -19,7 +19,7 @@ export default function ProjectsPage() {
             <ProjectCard 
               title="Roots Financial Platform"
               description={t("Award-winning financial platform consolidating budgeting, investment tracking, and credit card optimization.")}
-              date={<DateTime>March 2025</DateTime>}
+              date={<DateTime>27 March 2025</DateTime>}
               technologies={["Next.js", "React", "TailwindCSS", "Capital One Nessie API", "Gemini LLM", "Auth0"]}
               highlights={[
                 t("Led frontend development for an award-winning financial platform, implementing responsive UI components with Next.js, React, and TailwindCSS."),

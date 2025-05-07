@@ -17,8 +17,8 @@ export default function ExperiencePage() {
             company="Cisco Systems, Inc."
             role={t("Software Engineering Intern")}
             location={t("San Jose, CA")}
-            startDate={<DateTime>June 2024</DateTime>}
-            endDate={<DateTime>August 2024</DateTime>}
+            startDate={<DateTime >1 June 2024</DateTime>}
+            endDate={<DateTime>1 August 2024</DateTime>}
             description={
               [
                 t("Developed a Retrieval-Augmented Generation (RAG) agent using Ollama and LangChain to accelerate web page creation for internal teams."),
@@ -35,8 +35,8 @@ export default function ExperiencePage() {
             company="Effacita"
             role={t("Founder & Digital Marketing Consultant")}
             location={t("Atlanta Metro Area, GA")}
-            startDate={<DateTime>June 2022</DateTime>}
-            endDate={<DateTime>March 2023</DateTime>}
+            startDate={<DateTime>1 June 2022</DateTime>}
+            endDate={<DateTime>1 March 2023</DateTime>}
             description={[
               t("Founded a digital marketing consultancy serving local businesses in the salon and beauty industry, creating targeted email campaigns to an audience of thousands."),
               t("Developed streamlined user registration systems for salon subscriptions and appointment scheduling, increasing user engagement and improving conversion rates."),
