@@ -5,8 +5,6 @@ import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/navigation/footer";
 // Load Roboto font
 
-import { getLocale } from "gt-next/server";
-import { GTProvider } from "gt-next";
 const roboto = Roboto({
 	weight: ["400", "500", "700"],
 	subsets: ["latin"],
@@ -18,13 +16,12 @@ export const metadata = {
 	description: "Personal website showcasing experience, projects, and skills",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: { children: React.ReactNode }) {
 	return (
-		<html lang={await getLocale()}>
+		<html>
 			<body className={`${roboto.variable} font-sans`}>
-				<GTProvider>
         
 					<div className="min-h-screen flex flex-col bg-background">
 						<Navbar />
@@ -33,7 +30,6 @@ export default async function RootLayout({
 						</main>
 						<Footer />
 					</div>
-				</GTProvider>
 			</body>
 		</html>
 	);

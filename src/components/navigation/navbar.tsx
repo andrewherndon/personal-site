@@ -1,16 +1,12 @@
 // components/navigation/navbar.tsx
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { T } from "gt-next";
-import { LocaleSelector } from "gt-next/client";
 
 const Navbar = () => {
 	return (
-		<T id="components.navigation.navbar.0">
 			<nav className="bg-background/95 backdrop-blur-sm sticky top-0 z-10 py-4 px-6 shadow-md">
 				<div className="container mx-auto flex justify-between items-center">
 					<div className="flex-grow-0">
-                        <LocaleSelector />
 					</div>
 
 					<div className="hidden md:flex space-x-2">
@@ -31,7 +27,6 @@ const Navbar = () => {
 					</div>
 				</div>
 			</nav>
-		</T>
 	);
 };
 

@@ -10,13 +10,10 @@ import {
 	Code,
 	ExternalLink,
 } from "lucide-react";
-import profilePic from "../../../public/images/profile.jpg"; // Adjust the path as needed
-import { Var } from "gt-next";
-import { T } from "gt-next";
+import profilePic from "../../public/images/profile.jpg"; // Adjust the path as needed
 
 export default function Home() {
 	return (
-		<T id="app.page.0">
 			<div className="space-y-12">
 				{/* Hero Section with Photo + Name */}
 				<section className="flex flex-col md:flex-row items-center justify-center gap-8 py-12">
@@ -33,7 +30,7 @@ export default function Home() {
 					</div>
 					<div className="text-center md:text-left">
 						<h1 className="heading-accent text-5xl md:text-7xl font-bold mb-4">
-							<Var>Andrew Herndon</Var>
+							Andrew Herndon
 						</h1>
 						<h2 className="text-white text-xl md:text-2xl mb-6">
 							Software & ML Engineer
@@ -155,7 +152,7 @@ export default function Home() {
 						<div className="flex flex-col md:flex-row gap-8">
 							<div className="md:w-2/3">
 								<h3 className="text-2xl font-bold text-gold mb-3">
-									<Var>Roots Financial Platform</Var>
+									Roots Financial Platform
 								</h3>
 								<p className="mb-4">
 									Award-winning financial platform consolidating budgeting,
@@ -200,6 +197,5 @@ export default function Home() {
 					</div>
 				</section>
 			</div>
-		</T>
-	);
+		);
 }

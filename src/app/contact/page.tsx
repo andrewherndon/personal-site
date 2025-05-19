@@ -5,11 +5,9 @@ import {
 } from "@/components/ui/card";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
-import { T } from "gt-next";
 
 export default function ContactPage() {
 	return (
-		<T id="app.contact.page.0">
 			<div className="space-y-10">
 				<h1 className="heading-accent text-5xl font-bold text-center mb-12">
 					Contact Me
@@ -67,6 +65,5 @@ export default function ContactPage() {
 					</Card>
 				</div>
 			</div>
-		</T>
-	);
+		);
 }
