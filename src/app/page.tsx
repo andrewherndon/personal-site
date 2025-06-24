@@ -30,7 +30,7 @@ export default function Home() {
 					</div>
 					<div className="text-center md:text-left">
 						<h1 className="heading-accent text-5xl md:text-7xl font-bold mb-4">
-							Andrew Herndon Version 1
+							Andrew Herndon Version 2
 						</h1>
 						<h2 className="text-white text-xl md:text-2xl mb-6">
 							Software & ML Engineer
