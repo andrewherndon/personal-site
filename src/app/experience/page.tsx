@@ -22,7 +22,7 @@ export default function ExperiencePage() {
             <ul className="list-disc pl-5 mb-6 space-y-3">
               <li className="leading-relaxed">Developed a Retrieval-Augmented Generation (RAG) agent using Ollama and LangChain to accelerate web page creation for internal teams.</li>
               <li className="leading-relaxed">Ensured that generated pages adhered to Cisco-specific styling and supported multiple front-end frameworks, maintaining consistency across projects.</li>
-              <li className="leading-relaxed">Contributed to the agent's data set by creating reusable page templates and component structures in HTML, CSS, JavaScript, React, and Angular.</li>
+              <li className="leading-relaxed">Contributed to the agents data set by creating reusable page templates and component structures in HTML, CSS, JavaScript, React, and Angular.</li>
               <li className="leading-relaxed">Significantly reduced the time required for internal teams to build UI pages, potentially cutting development time from hours to seconds.</li>
             </ul>
             <div className="flex flex-wrap gap-2 mt-5">

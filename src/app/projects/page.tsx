@@ -28,9 +28,9 @@ export default function ProjectsPage() {
                 <h4 className="font-semibold mb-3 text-gold">Highlights:</h4>
                 <ul className="list-disc pl-5 space-y-2 text-white/90">
                   <li>Led frontend development for an award-winning financial platform, implementing responsive UI components with Next.js, React, and TailwindCSS.</li>
-                  <li>Collaborated in a cross-university team to create an intuitive interface leveraging Capital One's Nessie API for transaction simulation.</li>
+                  <li>Collaborated in a cross-university team to create an intuitive interface leveraging Capital Ones Nessie API for transaction simulation.</li>
                   <li>Designed user experience focused on making complex financial concepts accessible through interactive visualizations and personalized recommendations.</li>
-                  <li>Won 'Best Financial Hack' at HackPrinceton Spring 2025.</li>
+                  <li>Won Best Financial Hack at HackPrinceton Spring 2025.</li>
                 </ul>
               </div>
               <div className="flex flex-wrap gap-2 mt-5">
