@@ -1,6 +1,7 @@
 // components/experience/experience-card.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { T, Var } from "gt-next"
 
 type ExperienceProps = {
   company: string;
@@ -26,7 +27,11 @@ export function ExperienceCard({
       <CardHeader className="bg-background pb-4">
         <CardTitle className="heading-accent text-2xl">{company}</CardTitle>
         <div className="text-white font-medium mt-1">{role}</div>
-        <div className="text-white text-sm opacity-90 mt-1">{location} | {startDate} - {endDate}</div>
+        <div className="text-white text-sm opacity-90 mt-1">
+          <T id="components.experience.experience_card.location_date">
+            <Var>{location}</Var> | <Var>{startDate}</Var> - <Var>{endDate}</Var>
+          </T>
+        </div>
       </CardHeader>
       <CardContent className="bg-[var(--card-bg)] text-white pt-6">
         <ul className="list-disc pl-5 mb-6 space-y-3">
