@@ -1,6 +1,7 @@
 // components/experience/experience-card.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { T, Var } from "gt-next"
 
 type ExperienceProps = {
   company: string;
@@ -31,7 +32,9 @@ export function ExperienceCard({
       <CardContent className="bg-[var(--card-bg)] text-white pt-6">
         <ul className="list-disc pl-5 mb-6 space-y-3">
           {description.map((item, index) => (
-            <li key={index} className="leading-relaxed">{item}</li>
+            <li key={index} className="leading-relaxed">
+              <T><Var>{item}</Var></T>
+            </li>
           ))}
         </ul>
         <div className="flex flex-wrap gap-2 mt-5">

@@ -5,7 +5,7 @@ import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/navigation/footer";
 // Load Roboto font
 
-import { getLocale } from "gt-next/server";
+import { getLocale, getGT } from "gt-next/server";
 import { GTProvider } from "gt-next";
 const roboto = Roboto({
 	weight: ["400", "500", "700"],
@@ -13,10 +13,15 @@ const roboto = Roboto({
 	variable: "--font-roboto",
 });
 
-export const metadata = {
-	title: "Andrew Herndon - Portfolio",
-	description: "Personal website showcasing experience, projects, and skills",
+const getMetadata = async () => {
+	const t = await getGT();
+	return {
+		title: t("Andrew Herndon - Portfolio"),
+		description: t("Personal website showcasing experience, projects, and skills"),
+	};
 };
+
+export const metadata = await getMetadata();
 
 export default async function RootLayout({
 	children,
