@@ -5,23 +5,25 @@ import Navbar from "@/components/navigation/navbar";
 import Footer from "@/components/navigation/footer";
 // Load Roboto font
 
+import { GTProvider, useGT } from "gt-next";
+
 const roboto = Roboto({
-	weight: ["400", "500", "700"],
-	subsets: ["latin"],
-	variable: "--font-roboto",
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-roboto"
 });
 
 export const metadata = {
-	title: "Andrew Herndon - Portfolio",
-	description: "Personal website showcasing experience, projects, and skills",
+  title: "Andrew Herndon - Portfolio",
+  description: "Personal website showcasing experience, projects, and skills"
 };
 
 export default function RootLayout({
-	children,
-}: { children: React.ReactNode }) {
-	return (
-		<html>
-			<body className={`${roboto.variable} font-sans`}>
+  children
+}: {children: React.ReactNode;}) {
+  return (
+  <html>
+			<body className={`${roboto.variable} font-sans`}><GTProvider>
         
 					<div className="min-h-screen flex flex-col bg-background">
 						<Navbar />
@@ -30,7 +32,7 @@ export default function RootLayout({
 						</main>
 						<Footer />
 					</div>
-			</body>
+			</GTProvider></body>
 		</html>
-	);
+  );
 }

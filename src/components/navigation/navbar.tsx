@@ -1,6 +1,7 @@
 // components/navigation/navbar.tsx
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LocaleSelector, T } from "gt-next";
 
 const Navbar = () => {
 	return (
@@ -10,10 +11,14 @@ const Navbar = () => {
 					</div>
 
 					<div className="hidden md:flex space-x-2">
-						<NavLink href="/">Home</NavLink>
-						<NavLink href="/experience">Experience</NavLink>
-						<NavLink href="/projects">Projects</NavLink>
-						<NavLink href="/contact">Contact</NavLink>
+						<NavLink href="/"><T>Home</T></NavLink>
+						<NavLink href="/experience"><T>Experience</T></NavLink>
+						<NavLink href="/projects"><T>Projects</T></NavLink>
+						<NavLink href="/contact"><T>Contact</T></NavLink>
+					</div>
+
+					<div className="flex items-center">
+						<LocaleSelector />
 					</div>
 
 					{/* Mobile menu - simplified for this example */}
@@ -22,7 +27,7 @@ const Navbar = () => {
 							variant="ghost"
 							className="text-gold hover:text-white rounded-lg"
 						>
-							Menu
+							<T>Menu</T>
 						</Button>
 					</div>
 				</div>

@@ -5,13 +5,16 @@ import {
 } from "@/components/ui/card";
 import { Github, Linkedin, Mail } from "lucide-react";
 import Link from "next/link";
+import { T } from "gt-next";
 
 export default function ContactPage() {
 	return (
 			<div className="space-y-10">
-				<h1 className="heading-accent text-5xl font-bold text-center mb-12">
-					Contact Me
-				</h1>
+				<T>
+					<h1 className="heading-accent text-5xl font-bold text-center mb-12">
+						Contact Me
+					</h1>
+				</T>
 
 				<div className="flex justify-center">
 
@@ -24,7 +27,9 @@ export default function ContactPage() {
 								>
 									<Mail className="h-7 w-7 mr-4 text-gold" />
 									<div>
-										<div className="font-medium text-lg text-gold">Email</div>
+										<T>
+											<div className="font-medium text-lg text-gold">Email</div>
+										</T>
 										<div className="text-sm text-white/80 mt-1">
 											aherndon33@gatech.edu
 										</div>
@@ -38,7 +43,9 @@ export default function ContactPage() {
 								>
 									<Github className="h-7 w-7 mr-4 text-gold" />
 									<div>
-										<div className="font-medium text-lg text-gold">GitHub</div>
+										<T>
+											<div className="font-medium text-lg text-gold">GitHub</div>
+										</T>
 										<div className="text-sm text-white/80 mt-1">
 											github.com/andrewherndon
 										</div>
@@ -52,9 +59,11 @@ export default function ContactPage() {
 								>
 									<Linkedin className="h-7 w-7 mr-4 text-gold" />
 									<div>
-										<div className="font-medium text-lg text-gold">
-											LinkedIn
-										</div>
+										<T>
+											<div className="font-medium text-lg text-gold">
+												LinkedIn
+											</div>
+										</T>
 										<div className="text-sm text-white/80 mt-1">
 											www.linkedin.com/in/andrew-herndon-607304292
 										</div>

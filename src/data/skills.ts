@@ -1,5 +1,7 @@
 // data/skills.ts
-export const skills = {
+import { InlineTranslationOptions } from 'gt-next/types';
+
+export const getSkills = (t: (content: string, options?: InlineTranslationOptions) => string) => ({
     programmingLanguages: [
       "Python",
       "JavaScript",
@@ -22,13 +24,13 @@ export const skills = {
     specializations: [
       "ML / NLP",
       "RAG Systems",
-      "UI / UX Design",
+      t("UI / UX Design"),
       "Vector Databases",
-      "Front-End Development"
+      t("Front-End Development")
     ],
     languages: [
-      { name: "English", level: "Native" },
-      { name: "Russian", level: "Proficient" },
-      { name: "Chinese", level: "Beginner" }
+      { name: t("English"), level: t("Native") },
+      { name: t("Russian"), level: t("Proficient") },
+      { name: t("Chinese"), level: t("Beginner") }
     ]
-  };
+  });
