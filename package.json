@@ -4,16 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx gtx-cli translate && next build",
+    "build": "npm run translate && npx gtx-cli translate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "translate": "locadex translate"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.1",
     "ai-digest": "^1.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "gt-next": "^5.2.25",
+    "gt-next": "^5.2.39",
     "lucide-react": "^0.507.0",
     "next": "15.3.1",
     "react": "^19.0.0",
