@@ -1,17 +1,19 @@
 // data/education.ts
-export const education = [
+import { InlineTranslationOptions } from 'gt-next/types';
+
+export const getEducation = (t: (content: string, options?: InlineTranslationOptions) => string) => [
     {
       id: 1,
-      institution: "Georgia Institute of Technology",
-      location: "Atlanta, GA",
-      degree: "B.S. Computer Science",
-      concentration: "Intelligence and Devices",
-      startDate: "2023",
-      endDate: "Expected 2027",
+      institution: t("Georgia Institute of Technology"),
+      location: t("Atlanta, GA"),
+      degree: t("B.S. Computer Science"),
+      concentration: t("Intelligence and Devices"),
+      startDate: t("2023"),
+      endDate: t("Expected 2027"),
       relevantCoursework: [
-        "Object Oriented Programming",
-        "Data Structures & Algorithms",
-        "Objects & Design"
+        t("Object Oriented Programming"),
+        t("Data Structures & Algorithms"),
+        t("Objects & Design")
       ]
     }
   ];

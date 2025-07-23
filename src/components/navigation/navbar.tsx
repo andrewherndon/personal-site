@@ -14,20 +14,22 @@ const Navbar = () => {
 					</div>
 
 					<div className="hidden md:flex space-x-2">
-						<NavLink href="/">Home</NavLink>
-						<NavLink href="/experience">Experience</NavLink>
-						<NavLink href="/projects">Projects</NavLink>
-						<NavLink href="/contact">Contact</NavLink>
+						<T><NavLink href="/">Home</NavLink></T>
+						<T><NavLink href="/experience">Experience</NavLink></T>
+						<T><NavLink href="/projects">Projects</NavLink></T>
+						<T><NavLink href="/contact">Contact</NavLink></T>
 					</div>
 
 					{/* Mobile menu - simplified for this example */}
 					<div className="md:hidden">
-						<Button
-							variant="ghost"
-							className="text-gold hover:text-white rounded-lg"
-						>
-							Menu
-						</Button>
+						<T>
+							<Button
+								variant="ghost"
+								className="text-gold hover:text-white rounded-lg"
+							>
+								Menu
+							</Button>
+						</T>
 					</div>
 				</div>
 			</nav>
