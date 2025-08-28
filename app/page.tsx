@@ -1,18 +1,42 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
+function RandomFact() {
+  const [fact, setFact] = useState('');
+  
+  const facts = [
+    "I was born on a highway",
+    "I didn't miss a day of school until 6th grade", 
+    "Hated swimming (don't tell my mom) but did it for 6 years",
+    "Wore a speedo to a high school football and was banned from being class president",
+    "Failed my AP US History exam — hardest test I've done",
+    "I lucid dream at least once a week and sometimes I can't tell if a memory happened in real life or in a dream",
+    "I'm convinced that walking up two stairs at time will make my legs stronger everyday",
+    "As of August 2025 my squat is nearly equal to my bench press",
+    "I'm very good at holding my breath",
+    "My childhood cat had 3 legs",
+    "Since being a kid I've always wanted to spend a whole day staring at a clock"
+  ];
+  
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * facts.length);
+    setFact(facts[randomIndex]);
+  }, []);
+  
+  if (!fact) return null;
+  
+  return (
+    <div className="absolute bottom-24 right-6 z-20">
+      <p className="text-md text-[#FAF7F0]/80 text-right whitespace-nowrap">Random fact about me: {fact}</p>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
-    <div className="min-h-screen lg:h-screen bg-[#4A0000] text-[#FAF7F0] lg:overflow-hidden">
-      <div className="w-full min-h-screen lg:h-screen relative flex flex-col lg:block">
-        
-        {/* Header Navigation */}
-        <nav className="max-w-6xl mx-auto px-6 pt-8 pb-4 flex justify-between items-center relative z-10">
-          <div className="flex gap-8 text-[#FAF7F0] font-normal">
-            <a href="/" className="hover:text-[#D4AF37] transition-colors drop-shadow">Home</a>
-            <a href="/photography" className="hover:text-[#D4AF37] transition-colors drop-shadow">Photography</a>
-            <a href="mailto:aherndon33@gatech.edu" className="hover:text-[#D4AF37] transition-colors drop-shadow">Contact</a>
-          </div>
-        </nav>
-        
-        <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start pt-16 lg:h-[calc(100vh-200px)] relative z-10">
+    <>
+        <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start pt-24 pb-12 relative z-10">
           
           {/* Left Column - Intro */}
           <div className="space-y-8">
@@ -42,8 +66,7 @@ export default function Home() {
             </div>
             
             <p className="text-lg sm:text-xl text-[#FAF7F0] leading-relaxed font-medium drop-shadow">
-              Building the future of internationalization at General Translation. 
-              Specializing in RAG systems, full-stack development, and machine learning.
+               Fascinated with how computers understand natural language and financial systems, currently stuyding at NTU Singapore on exchange.
             </p>
             
             <div className="flex flex-wrap gap-4 sm:gap-8 text-lg sm:text-xl text-[#FAF7F0] font-semibold justify-center sm:justify-start">
@@ -55,6 +78,9 @@ export default function Home() {
               </a>
               <a href="/photography" className="hover:text-[#D4AF37] transition-colors drop-shadow">
                 Photography
+              </a>
+              <a href="https://www.linkedin.com/in/anherndon" className="hover:text-[#D4AF37] transition-colors drop-shadow">
+                Linkedin
               </a>
             </div>
           </div>
@@ -124,34 +150,8 @@ export default function Home() {
           </div>
         </main>
 
-        {/* Top Rug */}
-        <div className="absolute top-0 left-0 right-0 h-20 z-0">
-          <div 
-            className="w-full h-full opacity-80"
-            style={{
-              backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url('/rug2Formatted.png')",
-              backgroundSize: "auto 80px",
-              backgroundPosition: "center",
-              backgroundRepeat: "repeat-x"
-            }}
-          ></div>
-        </div>
-
-        {/* Bottom Rug */}
-        <div className="lg:absolute lg:bottom-0 left-0 right-0 h-20 z-0 mt-auto">
-          <div 
-            className="w-full h-full opacity-80"
-            style={{
-              backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)), url('/rug2Formatted.png')",
-              backgroundSize: "auto 80px",
-              backgroundPosition: "center",
-              backgroundRepeat: "repeat-x",
-              transform: "scaleY(-1)"
-            }}
-          ></div>
-        </div>
-
-      </div>
-    </div>
+        {/* Random Fact */}
+        <RandomFact />
+    </>
   );
 }

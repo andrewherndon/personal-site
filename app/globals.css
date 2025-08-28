@@ -90,7 +90,11 @@ body {
   ) 1;
 }
 
-/* Only underline links within main content, not navigation */
+/* Only underline links within main content, not navigation or cards */
 main a {
   text-decoration: underline;
+}
+
+main a.no-underline {
+  text-decoration: none;
 }
