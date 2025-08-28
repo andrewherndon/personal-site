@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #8B2323;
+  color: white;
+}
+
+.heading-accent {
+  color: #D4AF37;
+}
+
+.card {
+  background: #721c1c;
+  border: 2px solid #D4AF37;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.rounded-card {
+  background: #721c1c;
+  border: 2px solid #D4AF37;
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 2rem 0;
+}

@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+:root {
+  --byzantine-red: #8B0000;
+  --byzantine-gold: #D4AF37;
+  --persian-blue: #1E3A8A;
+  --persian-emerald: #065F46;
+  --persian-purple: #6B21A8;
+  --orthodox-cream: #FAF7F0;
+  --orthodox-charcoal: #1F2937;
+  --persian-rose: #BE185D;
+  --byzantine-bronze: #CD7F32;
+}
+
+@theme inline {
+  --color-background: #FAF7F0;
+  --color-foreground: #1F2937;
+  --font-sans: var(--font-crimson);
+  --font-display: var(--font-playfair);
+}
+
+body {
+  background: #4A0000;
+  color: #FAF7F0;
+  font-family: var(--font-crimson), serif;
+  line-height: 1.8;
+}
+
+.persian-ribbon {
+  position: relative;
+}
+
+.persian-ribbon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
+    url('/rug2Formatted.png');
+  background-size: auto 120px;
+  background-position: center;
+  background-repeat: repeat-x;
+  z-index: 1;
+}
+
+.persian-ribbon::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)),
+    url('/rug2Formatted.png');
+  background-size: auto 120px;
+  background-position: center;
+  background-repeat: repeat-x;
+  transform: scaleY(-1);
+  z-index: 1;
+}
+
+.orthodox-ornament {
+  position: relative;
+  text-align: center;
+}
+
+.orthodox-ornament::before,
+.orthodox-ornament::after {
+  content: '⟐';
+  font-size: 1.5rem;
+  color: #D4AF37;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.orthodox-ornament::before {
+  left: -2rem;
+}
+
+.orthodox-ornament::after {
+  right: -2rem;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.byzantine-header {
+  font-family: var(--font-playfair), serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #D4AF37;
+}
+
+.persian-pattern {
+  background-image: 
+    radial-gradient(circle at 2px 2px, #D4AF37 1px, transparent 0);
+  background-size: 20px 20px;
+  opacity: 0.05;
+}
+
+.icon-cross {
+  color: #D4AF37;
+  font-size: 1.25rem;
+  margin: 0 0.5rem;
+}
+
+.content-section {
+  position: relative;
+  padding: 4rem 2rem;
+  margin: 2rem 0;
+}
+
+.content-section:not(:last-child) {
+  border-bottom: 3px solid;
+  border-image: linear-gradient(
+    90deg,
+    transparent,
+    #D4AF37,
+    #8B0000,
+    #D4AF37,
+    transparent
+  ) 1;
+}
