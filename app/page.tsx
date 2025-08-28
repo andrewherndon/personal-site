@@ -1,25 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 function RandomFact() {
   const [fact, setFact] = useState('');
   
-  const facts = [
-    "I was born on a highway",
-    "I didn't miss a day of school until 6th grade", 
-    "Hated swimming (don't tell my mom) but did it for 6 years",
-    "Wore a speedo to a high school football and was banned from being class president",
-    "Failed my AP US History exam — hardest test I've done",
-    "I lucid dream at least once a week and sometimes I can't tell if a memory happened in real life or in a dream",
-    "I'm convinced that walking up two stairs at time will make my legs stronger everyday",
-    "As of August 2025 my squat is nearly equal to my bench press",
-    "I'm very good at holding my breath",
-    "My childhood cat had 3 legs",
-    "Since being a kid I've always wanted to spend a whole day staring at a clock"
-  ];
-  
   useEffect(() => {
+    const facts = [
+      "I was born on a highway",
+      "I didn't miss a day of school until 6th grade", 
+      "Hated swimming (don't tell my mom) but did it for 6 years",
+      "Wore a speedo to a high school football and was banned from being class president",
+      "Failed my AP US History exam — hardest test I've done",
+      "I lucid dream at least once a week and sometimes I can't tell if a memory happened in real life or in a dream",
+      "I'm convinced that walking up two stairs at time will make my legs stronger everyday",
+      "As of August 2025 my squat is nearly equal to my bench press",
+      "I'm very good at holding my breath",
+      "My childhood cat had 3 legs",
+      "Since being a kid I've always wanted to spend a whole day staring at a clock"
+    ];
+    
     const randomIndex = Math.floor(Math.random() * facts.length);
     setFact(facts[randomIndex]);
   }, []);
@@ -48,8 +49,8 @@ export default function Home() {
                     <div className="w-full h-full bg-[#5a70af] p-1">
                       <div className="w-full h-full bg-[#FAF7F0] flex items-center justify-center">
                         
-                        <div className="w-full h-full flex items-center justify-center text-[#8B0000] text-5xl font-bold">
-                        <img src="/profile.jpg" className="w-full h-full object-contains" />
+                        <div className="w-full h-full flex items-center justify-center text-[#8B0000] text-5xl font-bold relative">
+                        <Image src="/profile.jpg" alt="Andrew Herndon profile photo" fill className="object-cover" />
                         </div>
                       </div>
                     </div>
