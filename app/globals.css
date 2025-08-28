@@ -26,42 +26,7 @@ body {
   line-height: 1.8;
 }
 
-.persian-ribbon {
-  position: relative;
-}
 
-.persian-ribbon::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)),
-    url('/rug2Formatted.png');
-  background-size: auto 120px;
-  background-position: center;
-  background-repeat: repeat-x;
-  z-index: 1;
-}
-
-.persian-ribbon::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5)),
-    url('/rug2Formatted.png');
-  background-size: auto 120px;
-  background-position: center;
-  background-repeat: repeat-x;
-  transform: scaleY(-1);
-  z-index: 1;
-}
 
 .orthodox-ornament {
   position: relative;
@@ -123,4 +88,9 @@ body {
     #D4AF37,
     transparent
   ) 1;
+}
+
+/* Only underline links within main content, not navigation */
+main a {
+  text-decoration: underline;
 }
