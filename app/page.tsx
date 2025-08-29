@@ -44,13 +44,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
               {/* Profile Picture */}
               <div className="relative">
-                <div className="w-70 h-48 shadow-2xl bg-[#5a70af] p-1">
+                <div className="w-66 h-46 shadow-2xl bg-[#5a70af] p-1">
                   <div className="w-full h-full bg-[#D4AF37] p-1">
                     <div className="w-full h-full bg-[#5a70af] p-1">
                       <div className="w-full h-full bg-[#FAF7F0] flex items-center justify-center">
                         
                         <div className="w-full h-full flex items-center justify-center text-[#8B0000] text-5xl font-bold relative">
-                        <Image src="/profile.jpg" alt="Andrew Herndon profile photo" fill className="object-cover" />
+                        <Image src="/profile.jpg" alt="Andrew Herndon profile photo" fill className="object-contain" />
                         </div>
                       </div>
                     </div>
