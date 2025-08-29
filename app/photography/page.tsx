@@ -14,7 +14,7 @@ export default function Photography() {
               Photography
             </h1>
             <p className="text-lg text-[#FAF7F0]/80 max-w-2xl mx-auto leading-relaxed">
-              Capturing moments through the lens across different cities and experiences.
+              Random stuff I've shot
             </p>
           </div>
           
