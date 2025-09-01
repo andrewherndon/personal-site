@@ -67,7 +67,7 @@ export default function Home() {
             </div>
             
             <p className="text-lg sm:text-xl text-[#FAF7F0] leading-relaxed font-medium drop-shadow">
-               Fascinated with how computers understand natural language and financial systems, currently studying at NTU Singapore on exchange.
+              Fascinated with how computers understand natural language and financial systems, currently studying at NTU Singapore on exchange.
             </p>
             
             <div className="flex flex-wrap gap-4 sm:gap-8 text-lg sm:text-xl text-[#FAF7F0] font-semibold justify-center sm:justify-start">

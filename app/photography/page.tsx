@@ -14,7 +14,7 @@ export default function Photography() {
               Photography
             </h1>
             <p className="text-lg text-[#FAF7F0]/80 max-w-2xl mx-auto leading-relaxed">
-              Random stuff I've shot
+              Random stuff I&apos;ve shot
             </p>
           </div>
           
