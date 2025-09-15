@@ -6,18 +6,17 @@ import { LocaleSelector } from "gt-next/client";
 
 const Navbar = () => {
 	return (
-		<T id="components.navigation.navbar.0">
-			<nav className="bg-background/95 backdrop-blur-sm sticky top-0 z-10 py-4 px-6 shadow-md">
+		<nav className="bg-background/95 backdrop-blur-sm sticky top-0 z-10 py-4 px-6 shadow-md">
 				<div className="container mx-auto flex justify-between items-center">
 					<div className="flex-grow-0">
                         <LocaleSelector />
 					</div>
 
 					<div className="hidden md:flex space-x-2">
-						<NavLink href="/">Home</NavLink>
-						<NavLink href="/experience">Experience</NavLink>
-						<NavLink href="/projects">Projects</NavLink>
-						<NavLink href="/contact">Contact</NavLink>
+						<NavLink href="/"><T>Home</T></NavLink>
+						<NavLink href="/experience"><T>Experience</T></NavLink>
+						<NavLink href="/projects"><T>Projects</T></NavLink>
+						<NavLink href="/contact"><T>Contact</T></NavLink>
 					</div>
 
 					{/* Mobile menu - simplified for this example */}
@@ -26,12 +25,11 @@ const Navbar = () => {
 							variant="ghost"
 							className="text-gold hover:text-white rounded-lg"
 						>
-							Menu
+							<T>Menu</T>
 						</Button>
 					</div>
 				</div>
-			</nav>
-		</T>
+		</nav>
 	);
 };
 

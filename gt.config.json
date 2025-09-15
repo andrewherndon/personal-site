@@ -1,9 +1,16 @@
 {
-  "defaultLocale": "en",
+  "defaultLocale": "en-US",
   "locales": [
-    "zh",
-    "ru",
-    "es"
+    "en-US",
+    "ja"
   ],
-  "_versionId": "d64cbeefea1cac20b9c4dd4fa6231717b044bead3fe6828d47f450b0f1c1859a"
+  "_versionId": "d64cbeefea1cac20b9c4dd4fa6231717b044bead3fe6828d47f450b0f1c1859a",
+  "projectId": "prj_dmltwyc415ofgkkkr8wbzrn3",
+  "baseUrl": "http://localhost:10000",
+  "files": {
+    "gt": {
+      "output": "public/_gt/[locale].json"
+    }
+  },
+  "framework": "next-app"
 }

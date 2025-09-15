@@ -16,8 +16,7 @@ import { T } from "gt-next";
 
 export default function Home() {
 	return (
-		<T id="app.page.0">
-			<div className="space-y-12">
+		<div className="space-y-12">
 				{/* Hero Section with Photo + Name */}
 				<section className="flex flex-col md:flex-row items-center justify-center gap-8 py-12">
 					<div className="profile-image-container">
@@ -36,7 +35,7 @@ export default function Home() {
 							<Var>Andrew Herndon</Var>
 						</h1>
 						<h2 className="text-white text-xl md:text-2xl mb-6">
-							Software & ML Engineer
+							<T>Software & ML Engineer</T>
 						</h2>
 						<div className="flex flex-wrap justify-center md:justify-start gap-4">
 							<Link
@@ -46,7 +45,7 @@ export default function Home() {
 							>
 								<Button className="bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
 									<Github className="mr-2 h-5 w-5" />
-									GitHub
+									<T>GitHub</T>
 								</Button>
 							</Link>
 							<Link
@@ -56,13 +55,13 @@ export default function Home() {
 							>
 								<Button className="bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
 									<Linkedin className="mr-2 h-5 w-5" />
-									LinkedIn
+									<T>LinkedIn</T>
 								</Button>
 							</Link>
 							<Link href="mailto:aherndon33@gatech.edu">
 								<Button className="bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
 									<Mail className="mr-2 h-5 w-5" />
-									Email
+									<T>Email</T>
 								</Button>
 							</Link>
 						</div>
@@ -72,22 +71,22 @@ export default function Home() {
 				{/* About Me Card */}
 				<section className="rounded-card">
 					<div className="flex flex-col gap-6">
-						<h2 className="heading-accent text-3xl font-bold">About Me</h2>
+						<h2 className="heading-accent text-3xl font-bold"><T>About Me</T></h2>
 						<p className="text-lg">
-							I&apos;m a Computer Science student at Georgia Institute of Technology
+							<T>I&apos;m a Computer Science student at Georgia Institute of Technology
 							with a focus on Intelligence and Devices. My experience includes
 							software engineering at Cisco Systems and founding a digital
-							marketing consultancy.
+							marketing consultancy.</T>
 						</p>
 						<p className="text-lg">
-							I&apos;m passionate about developing intelligent systems that solve
+							<T>I&apos;m passionate about developing intelligent systems that solve
 							real-world problems, with particular interests in machine
-							learning, natural language processing, and software development.
+							learning, natural language processing, and software development.</T>
 						</p>
 						<div className="flex justify-end">
 							<Link href="/contact">
 								<Button className="bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
-									Get in Touch
+									<T>Get in Touch</T>
 								</Button>
 							</Link>
 						</div>
@@ -100,14 +99,14 @@ export default function Home() {
 					<div className="card hover:translate-y-[-5px] transition-transform duration-300">
 						<div className="card-body p-6 flex flex-col h-full">
 							<FileText className="h-12 w-12 text-gold mb-4" />
-							<h3 className="heading-accent text-2xl font-bold text-gold mb-3">Experience</h3>
+							<h3 className="heading-accent text-2xl font-bold text-gold mb-3"><T>Experience</T></h3>
 							<p className="mb-6 flex-grow">
-								View my professional experience, including roles at Cisco
-								Systems and my entrepreneurial ventures.
+								<T>View my professional experience, including roles at Cisco
+								Systems and my entrepreneurial ventures.</T>
 							</p>
 							<Link href="/experience" className="mt-auto">
 								<Button className="w-full bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
-									View Experience
+									<T>View Experience</T>
 								</Button>
 							</Link>
 						</div>
@@ -117,14 +116,14 @@ export default function Home() {
 					<div className="card hover:translate-y-[-5px] transition-transform duration-300">
 						<div className="card-body p-6 flex flex-col h-full">
 							<Code className="h-12 w-12 text-gold mb-4" />
-							<h3 className="heading-accent text-2xl font-bold text-gold mb-3">Projects</h3>
+							<h3 className="heading-accent text-2xl font-bold text-gold mb-3"><T>Projects</T></h3>
 							<p className="mb-6 flex-grow">
-								Explore my portfolio of projects, including the award-winning
-								Roots Financial Platform and Georgia Tech RAG Chatbot.
+								<T>Explore my portfolio of projects, including the award-winning
+								Roots Financial Platform and Georgia Tech RAG Chatbot.</T>
 							</p>
 							<Link href="/projects" className="mt-auto">
 								<Button className="w-full bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
-									View Projects
+									<T>View Projects</T>
 								</Button>
 							</Link>
 						</div>
@@ -134,14 +133,14 @@ export default function Home() {
 					<div className="card hover:translate-y-[-5px] transition-transform duration-300">
 						<div className="card-body p-6 flex flex-col h-full">
 							<Mail className="h-12 w-12 text-gold mb-4" />
-							<h3 className="heading-accent text-2xl font-bold text-gold mb-3">Contact</h3>
+							<h3 className="heading-accent text-2xl font-bold text-gold mb-3"><T>Contact</T></h3>
 							<p className="mb-6 flex-grow">
-								Get in touch with me to discuss opportunities, projects, or just
-								to say hello.
+								<T>Get in touch with me to discuss opportunities, projects, or just
+								to say hello.</T>
 							</p>
 							<Link href="/contact" className="mt-auto">
 								<Button className="w-full bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
-									Contact Me
+									<T>Contact Me</T>
 								</Button>
 							</Link>
 						</div>
@@ -151,17 +150,17 @@ export default function Home() {
 				{/* Featured Project */}
 				<section className="rounded-card">
 					<div className="flex flex-col gap-6">
-						<h2 className="heading-accent text-3xl font-bold mb-2">Featured Project</h2>
+						<h2 className="heading-accent text-3xl font-bold mb-2"><T>Featured Project</T></h2>
 						<div className="flex flex-col md:flex-row gap-8">
 							<div className="md:w-2/3">
 								<h3 className="text-2xl font-bold text-gold mb-3">
 									<Var>Roots Financial Platform</Var>
 								</h3>
 								<p className="mb-4">
-									Award-winning financial platform consolidating budgeting,
+									<T>Award-winning financial platform consolidating budgeting,
 									investment tracking, and credit card optimization. Led
 									frontend development and implemented responsive UI components
-									with Next.js, React, and TailwindCSS.
+									with Next.js, React, and TailwindCSS.</T>
 								</p>
 								<div className="flex flex-wrap gap-2 mb-4">
 									<span className="badge">Next.js</span>
@@ -177,7 +176,7 @@ export default function Home() {
 									>
 										<Button className="bg-gold text-background hover:bg-gold hover:text-background rounded-xl btn-shadow">
 											<Github className="mr-2 h-5 w-5" />
-											GitHub
+											<T>GitHub</T>
 										</Button>
 									</Link>
 									<Link
@@ -187,7 +186,7 @@ export default function Home() {
 									>
 										<Button className="bg-transparent border-2 border-gold text-gold hover:bg-gold hover:text-background rounded-xl btn-shadow">
 											<ExternalLink className="mr-2 h-5 w-5" />
-											Devpost
+											<T>Devpost</T>
 										</Button>
 									</Link>
 								</div>
@@ -199,7 +198,6 @@ export default function Home() {
 						</div>
 					</div>
 				</section>
-			</div>
-		</T>
+		</div>
 	);
 }
