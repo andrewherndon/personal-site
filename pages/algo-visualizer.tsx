@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
 
 interface ArrayItem {
@@ -17,6 +17,9 @@ const HybridSortVisualizer = () => {
   const [sorting, setSorting] = useState<number[]>([]);
   const [merging, setMerging] = useState<number[]>([]);
   const [isPaused, setIsPaused] = useState(false);
+  const [shouldStop, setShouldStop] = useState(false);
+  const isPausedRef = useRef(false);
+  const shouldStopRef = useRef(false);
 
   // Generate random array
   const generateArray = useCallback(() => {
@@ -33,35 +36,56 @@ const HybridSortVisualizer = () => {
     setCurrentStep('Array generated');
   }, []);
 
-  // Sleep function for animation delays
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  // Sleep function for animation delays with pause/stop support
+  const sleep = async (ms: number) => {
+    return new Promise<void>((resolve) => {
+      const checkPauseAndStop = () => {
+        if (shouldStopRef.current) {
+          resolve();
+          return;
+        }
+        if (isPausedRef.current) {
+          setTimeout(checkPauseAndStop, 100);
+        } else {
+          setTimeout(resolve, ms);
+        }
+      };
+      checkPauseAndStop();
+    });
+  };
 
   // Insertion sort for small arrays
   const insertionSort = async (arr: ArrayItem[], left: number, right: number, updateArray: (arr: ArrayItem[]) => void) => {
+    if (shouldStopRef.current) return;
     setCurrentStep(`Using Insertion Sort for subarray [${left}-${right}] (size: ${right - left + 1})`);
     setSorting([left, right]);
     
     for (let i = left + 1; i <= right; i++) {
+      if (shouldStopRef.current) return;
       const key = arr[i];
       let j = i - 1;
       
       setComparing([i]);
-      await sleep(speed);
+      await sleep(310 - speed);
+      if (shouldStopRef.current) return;
       
       while (j >= left && arr[j].value > key.value) {
+        if (shouldStopRef.current) return;
         setComparing([j, j + 1]);
-        await sleep(speed);
+        await sleep(310 - speed);
+        if (shouldStopRef.current) return;
         
         arr[j + 1] = arr[j];
         updateArray([...arr]);
-        await sleep(speed);
+        await sleep(310 - speed);
+        if (shouldStopRef.current) return;
         
         j--;
       }
       
       arr[j + 1] = key;
       updateArray([...arr]);
-      await sleep(speed);
+      await sleep(310 - speed);
     }
     
     setSorting([]);
@@ -70,6 +94,7 @@ const HybridSortVisualizer = () => {
 
   // Merge function for merge sort
   const merge = async (arr: ArrayItem[], left: number, mid: number, right: number, updateArray: (arr: ArrayItem[]) => void) => {
+    if (shouldStopRef.current) return;
     setCurrentStep(`Merging subarrays [${left}-${mid}] and [${mid + 1}-${right}]`);
     setMerging([left, right]);
     
@@ -79,8 +104,10 @@ const HybridSortVisualizer = () => {
     let i = 0, j = 0, k = left;
     
     while (i < leftArr.length && j < rightArr.length) {
+      if (shouldStopRef.current) return;
       setComparing([left + i, mid + 1 + j]);
-      await sleep(speed);
+      await sleep(310 - speed);
+      if (shouldStopRef.current) return;
       
       if (leftArr[i].value <= rightArr[j].value) {
         arr[k] = leftArr[i];
@@ -91,22 +118,27 @@ const HybridSortVisualizer = () => {
       }
       
       updateArray([...arr]);
-      await sleep(speed);
+      await sleep(310 - speed);
+      if (shouldStopRef.current) return;
       k++;
     }
     
     while (i < leftArr.length) {
+      if (shouldStopRef.current) return;
       arr[k] = leftArr[i];
       updateArray([...arr]);
-      await sleep(speed);
+      await sleep(310 - speed);
+      if (shouldStopRef.current) return;
       i++;
       k++;
     }
     
     while (j < rightArr.length) {
+      if (shouldStopRef.current) return;
       arr[k] = rightArr[j];
       updateArray([...arr]);
-      await sleep(speed);
+      await sleep(310 - speed);
+      if (shouldStopRef.current) return;
       j++;
       k++;
     }
@@ -117,21 +149,24 @@ const HybridSortVisualizer = () => {
 
   // Hybrid merge sort
   const hybridMergeSort = async (arr: ArrayItem[], left: number, right: number, updateArray: (arr: ArrayItem[]) => void) => {
-    if (left < right) {
-      const size = right - left + 1;
+    if (shouldStopRef.current || left >= right) return;
+    
+    const size = right - left + 1;
+    
+    // Use insertion sort for small subarrays
+    if (size <= threshold) {
+      await insertionSort(arr, left, right, updateArray);
+    } else {
+      // Use merge sort for larger subarrays
+      if (shouldStopRef.current) return;
+      setCurrentStep(`Dividing array [${left}-${right}] (size: ${size})`);
+      const mid = Math.floor((left + right) / 2);
       
-      // Use insertion sort for small subarrays
-      if (size <= threshold) {
-        await insertionSort(arr, left, right, updateArray);
-      } else {
-        // Use merge sort for larger subarrays
-        setCurrentStep(`Dividing array [${left}-${right}] (size: ${size})`);
-        const mid = Math.floor((left + right) / 2);
-        
-        await hybridMergeSort(arr, left, mid, updateArray);
-        await hybridMergeSort(arr, mid + 1, right, updateArray);
-        await merge(arr, left, mid, right, updateArray);
-      }
+      await hybridMergeSort(arr, left, mid, updateArray);
+      if (shouldStopRef.current) return;
+      await hybridMergeSort(arr, mid + 1, right, updateArray);
+      if (shouldStopRef.current) return;
+      await merge(arr, left, mid, right, updateArray);
     }
   };
 
@@ -141,32 +176,46 @@ const HybridSortVisualizer = () => {
     
     setIsAnimating(true);
     setIsPaused(false);
+    setShouldStop(false);
+    isPausedRef.current = false;
+    shouldStopRef.current = false;
     const arrCopy = [...array];
     
     await hybridMergeSort(arrCopy, 0, arrCopy.length - 1, setArray);
     
-    setCurrentStep('Sorting completed!');
+    if (!shouldStopRef.current) {
+      setCurrentStep('Sorting completed!');
+    } else {
+      setCurrentStep('Sorting stopped');
+    }
     setComparing([]);
     setSorting([]);
     setMerging([]);
     setIsAnimating(false);
+    setShouldStop(false);
+    shouldStopRef.current = false;
   };
 
   const pauseAnimation = () => {
     setIsPaused(true);
+    isPausedRef.current = true;
+    setCurrentStep('Paused');
   };
 
   const resumeAnimation = () => {
     setIsPaused(false);
+    isPausedRef.current = false;
   };
 
   const stopAnimation = () => {
-    setIsAnimating(false);
+    setShouldStop(true);
+    shouldStopRef.current = true;
     setIsPaused(false);
+    isPausedRef.current = false;
     setComparing([]);
     setSorting([]);
     setMerging([]);
-    setCurrentStep('Stopped');
+    setCurrentStep('Stopping...');
   };
 
   // Initialize with random array
