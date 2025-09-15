@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 interface ArrayItem {
   value: number;
@@ -249,6 +250,12 @@ const HybridSortVisualizer = () => {
             <p className="text-gray-400 text-sm">
               Combines merge sort with insertion sort for optimal performance
             </p>
+            <Link
+              href="/hybrid-sort-animation"
+              className="inline-block px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors mt-2"
+            >
+              View Divide & Conquer Version
+            </Link>
           </div>
 
           {/* Controls */}

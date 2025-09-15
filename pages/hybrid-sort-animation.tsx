@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 interface ArraySegment {
   start: number;
@@ -276,6 +277,12 @@ const HybridSortVisualizer = () => {
             <h1 className="text-2xl font-bold text-white mb-1">
               Hybrid Sort Visualizer
             </h1>
+            <Link
+              href="/hybrid-sort"
+              className="inline-block px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors"
+            >
+              View Bar Chart Version
+            </Link>
           </div>
 
           {/* Controls */}
