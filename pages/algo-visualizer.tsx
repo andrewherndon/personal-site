@@ -225,10 +225,10 @@ const HybridSortVisualizer = () => {
 
   // Get bar color based on state
   const getBarColor = (index: number) => {
-    if (comparing.includes(index)) return '#ff6b6b';
-    if (sorting.length >= 2 && sorting[0] <= index && index <= sorting[1]) return '#4ecdc4';
-    if (merging.length >= 2 && merging[0] <= index && index <= merging[1]) return '#45b7d1';
-    return '#95a5a6';
+    if (comparing.includes(index)) return '#f87171'; // red-400
+    if (sorting.length >= 2 && sorting[0] <= index && index <= sorting[1]) return '#34d399'; // emerald-400
+    if (merging.length >= 2 && merging[0] <= index && index <= merging[1]) return '#22d3ee'; // cyan-400
+    return '#94a3b8'; // slate-400
   };
 
   return (
@@ -239,65 +239,65 @@ const HybridSortVisualizer = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-8">
+      <div className="min-h-screen bg-gradient-to-br from-black to-gray-900 p-6">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+          <div className="text-center mb-6">
+            <h1 className="text-3xl font-bold text-white mb-2">
               Hybrid Merge-Insertion Sort
             </h1>
-            <p className="text-gray-300">
+            <p className="text-gray-400 text-sm">
               Combines merge sort with insertion sort for optimal performance
             </p>
           </div>
 
           {/* Controls */}
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 mb-4">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <button
                 onClick={generateArray}
                 disabled={isAnimating}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 disabled:bg-gray-700 text-white rounded border border-gray-600 transition-colors text-sm"
               >
-                Generate New Array
+                Generate Array
               </button>
               
               {!isAnimating ? (
                 <button
                   onClick={startSort}
                   disabled={array.length === 0}
-                  className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 bg-green-700 hover:bg-green-600 disabled:bg-gray-700 text-white rounded border border-green-600 transition-colors text-sm"
                 >
-                  ▶ Start Sort
+                  Start
                 </button>
               ) : (
                 <div className="flex gap-2">
                   {!isPaused ? (
                     <button
                       onClick={pauseAnimation}
-                      className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-yellow-700 hover:bg-yellow-600 text-white rounded border border-yellow-600 transition-colors text-sm"
                     >
-                      ⏸ Pause
+                      Pause
                     </button>
                   ) : (
                     <button
                       onClick={resumeAnimation}
-                      className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                      className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded border border-green-600 transition-colors text-sm"
                     >
-                      ▶ Resume
+                      Resume
                     </button>
                   )}
                   <button
                     onClick={stopAnimation}
-                    className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    className="px-4 py-2 bg-red-700 hover:bg-red-600 text-white rounded border border-red-600 transition-colors text-sm"
                   >
-                    ⏹ Stop
+                    Stop
                   </button>
                 </div>
               )}
 
-              <div className="flex items-center gap-2">
-                <label className="text-white">Threshold (S):</label>
+              <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
+                <label className="text-gray-300 text-sm">Threshold:</label>
                 <input
                   type="range"
                   min="5"
@@ -305,58 +305,58 @@ const HybridSortVisualizer = () => {
                   value={threshold}
                   onChange={(e) => setThreshold(parseInt(e.target.value))}
                   disabled={isAnimating}
-                  className="w-20"
+                  className="w-16 accent-gray-500"
                 />
-                <span className="text-white w-8">{threshold}</span>
+                <span className="text-white text-sm w-6">{threshold}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                <label className="text-white">Speed:</label>
+              <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
+                <label className="text-gray-300 text-sm">Speed:</label>
                 <input
                   type="range"
                   min="10"
                   max="300"
                   value={speed}
                   onChange={(e) => setSpeed(parseInt(e.target.value))}
-                  className="w-20"
+                  className="w-16 accent-gray-500"
                 />
-                <span className="text-white w-12">{speed}ms</span>
+                <span className="text-white text-sm w-8">{speed}</span>
               </div>
             </div>
           </div>
 
           {/* Status */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 mb-4">
             <div className="text-center">
-              <p className="text-white text-lg">{currentStep || 'Ready to sort'}</p>
+              <p className="text-gray-300 text-sm">{currentStep || 'Ready to sort'}</p>
             </div>
           </div>
 
           {/* Legend */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6">
-            <div className="flex flex-wrap justify-center gap-6">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-3 mb-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                <span className="text-white">Default</span>
+                <div className="w-3 h-3 bg-gray-500 rounded"></div>
+                <span className="text-gray-400 text-xs">Default</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-400 rounded"></div>
-                <span className="text-white">Comparing</span>
+                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                <span className="text-gray-400 text-xs">Comparing</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-teal-400 rounded"></div>
-                <span className="text-white">Insertion Sort</span>
+                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                <span className="text-gray-400 text-xs">Insertion Sort</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-400 rounded"></div>
-                <span className="text-white">Merging</span>
+                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                <span className="text-gray-400 text-xs">Merging</span>
               </div>
             </div>
           </div>
 
           {/* Visualization */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <div className="flex items-end justify-center gap-1 min-h-96">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <div className="flex items-end justify-center gap-1 min-h-80">
               {array.map((item, index) => (
                 <div
                   key={`${item.id}-${index}`}
@@ -377,15 +377,6 @@ const HybridSortVisualizer = () => {
           </div>
 
           {/* Algorithm Info */}
-          <div className="bg-gray-800 rounded-lg p-6 mt-6">
-            <h3 className="text-xl font-bold text-white mb-3">How it works:</h3>
-            <div className="text-gray-300 space-y-2">
-              <p>• <strong>Threshold S = {threshold}:</strong> When a subarray size ≤ {threshold}, use insertion sort</p>
-              <p>• <strong>Large subarrays:</strong> Use merge sort (divide and conquer)</p>
-              <p>• <strong>Small subarrays:</strong> Use insertion sort (more efficient for small datasets)</p>
-              <p>• <strong>Hybrid approach:</strong> Combines the best of both algorithms</p>
-            </div>
-          </div>
         </div>
       </div>
     </>
