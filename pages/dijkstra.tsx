@@ -38,7 +38,6 @@ const DijkstraVisualizer = () => {
   const [speed, setSpeed] = useState(800);
   const [startNode, setStartNode] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [shouldStop, setShouldStop] = useState(false);
   const isPausedRef = useRef(false);
   const shouldStopRef = useRef(false);
 
@@ -51,9 +50,9 @@ const DijkstraVisualizer = () => {
     // Create nodes in a circle layout
     for (let i = 0; i < nodeCount; i++) {
       const angle = (i * 2 * Math.PI) / nodeCount;
-      const radius = 150;
-      const x = 300 + radius * Math.cos(angle);
-      const y = 200 + radius * Math.sin(angle);
+      const radius = 120;
+      const x = 250 + radius * Math.cos(angle);
+      const y = 150 + radius * Math.sin(angle);
 
       nodes.push({
         id: i,
@@ -115,7 +114,6 @@ const DijkstraVisualizer = () => {
 
     setIsAnimating(true);
     setIsPaused(false);
-    setShouldStop(false);
     isPausedRef.current = false;
     shouldStopRef.current = false;
 
@@ -205,7 +203,6 @@ const DijkstraVisualizer = () => {
 
     setGraph(prev => ({ ...prev, currentNode: null }));
     setIsAnimating(false);
-    setShouldStop(false);
     shouldStopRef.current = false;
   };
 
@@ -221,7 +218,6 @@ const DijkstraVisualizer = () => {
   };
 
   const stopAnimation = () => {
-    setShouldStop(true);
     shouldStopRef.current = true;
     setIsPaused(false);
     isPausedRef.current = false;
@@ -374,111 +370,177 @@ const DijkstraVisualizer = () => {
             </div>
           </div>
 
-          {/* Graph Visualization */}
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 mb-4">
-            <div className="relative" style={{ height: '400px', width: '100%' }}>
-              <svg width="100%" height="100%" viewBox="0 0 600 400">
-                {/* Edges */}
-                {graph.edges.map((edge, index) => {
-                  const fromNode = graph.nodes[edge.from];
-                  const toNode = graph.nodes[edge.to];
-                  if (!fromNode || !toNode) return null;
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4" style={{ minHeight: '400px' }}>
+            {/* Graph Visualization */}
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col">
+              <h3 className="text-white text-lg font-bold mb-3">Graph</h3>
+              <div className="flex-1 relative">
+                <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+                  {/* Edges */}
+                  {graph.edges.map((edge) => {
+                    const fromNode = graph.nodes[edge.from];
+                    const toNode = graph.nodes[edge.to];
+                    if (!fromNode || !toNode) return null;
 
-                  // Only draw each edge once (from lower id to higher id)
-                  if (edge.from > edge.to) return null;
+                    // Only draw each edge once (from lower id to higher id)
+                    if (edge.from > edge.to) return null;
 
-                  const midX = (fromNode.x + toNode.x) / 2;
-                  const midY = (fromNode.y + toNode.y) / 2;
+                    const midX = (fromNode.x + toNode.x) / 2;
+                    const midY = (fromNode.y + toNode.y) / 2;
 
-                  return (
-                    <g key={`${edge.from}-${edge.to}`}>
-                      <line
-                        x1={fromNode.x}
-                        y1={fromNode.y}
-                        x2={toNode.x}
-                        y2={toNode.y}
-                        stroke="#4b5563"
-                        strokeWidth="2"
-                      />
+                    return (
+                      <g key={`${edge.from}-${edge.to}`}>
+                        <line
+                          x1={fromNode.x}
+                          y1={fromNode.y}
+                          x2={toNode.x}
+                          y2={toNode.y}
+                          stroke="#4b5563"
+                          strokeWidth="2"
+                        />
+                        <circle
+                          cx={midX}
+                          cy={midY}
+                          r="10"
+                          fill="#374151"
+                          stroke="#6b7280"
+                          strokeWidth="1"
+                        />
+                        <text
+                          x={midX}
+                          y={midY + 3}
+                          textAnchor="middle"
+                          fontSize="9"
+                          fill="white"
+                        >
+                          {edge.weight}
+                        </text>
+                      </g>
+                    );
+                  })}
+
+                  {/* Nodes */}
+                  {graph.nodes.map((node) => (
+                    <g key={node.id}>
                       <circle
-                        cx={midX}
-                        cy={midY}
-                        r="12"
-                        fill="#374151"
-                        stroke="#6b7280"
-                        strokeWidth="1"
+                        cx={node.x}
+                        cy={node.y}
+                        r="20"
+                        fill={getNodeColor(node)}
+                        stroke="#374151"
+                        strokeWidth="2"
+                        className="transition-all duration-500"
                       />
                       <text
-                        x={midX}
-                        y={midY + 4}
+                        x={node.x}
+                        y={node.y - 3}
                         textAnchor="middle"
-                        fontSize="10"
-                        fill="white"
+                        fontSize="11"
+                        fill={getNodeTextColor(node)}
+                        fontWeight="bold"
                       >
-                        {edge.weight}
+                        {node.id}
+                      </text>
+                      <text
+                        x={node.x}
+                        y={node.y + 8}
+                        textAnchor="middle"
+                        fontSize="9"
+                        fill={getNodeTextColor(node)}
+                      >
+                        {node.distance === Infinity ? '∞' : node.distance}
                       </text>
                     </g>
-                  );
-                })}
-
-                {/* Nodes */}
-                {graph.nodes.map((node) => (
-                  <g key={node.id}>
-                    <circle
-                      cx={node.x}
-                      cy={node.y}
-                      r="25"
-                      fill={getNodeColor(node)}
-                      stroke="#374151"
-                      strokeWidth="2"
-                      className="transition-all duration-500"
-                    />
-                    <text
-                      x={node.x}
-                      y={node.y - 5}
-                      textAnchor="middle"
-                      fontSize="12"
-                      fill={getNodeTextColor(node)}
-                      fontWeight="bold"
-                    >
-                      {node.id}
-                    </text>
-                    <text
-                      x={node.x}
-                      y={node.y + 8}
-                      textAnchor="middle"
-                      fontSize="10"
-                      fill={getNodeTextColor(node)}
-                    >
-                      {node.distance === Infinity ? '∞' : node.distance}
-                    </text>
-                  </g>
-                ))}
-              </svg>
+                  ))}
+                </svg>
+              </div>
             </div>
-          </div>
 
-          {/* Heap State */}
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-            <h3 className="text-white text-lg font-bold mb-3">Priority Queue (Heap)</h3>
-            <div className="flex flex-wrap gap-2">
-              {graph.heap.length === 0 ? (
-                <span className="text-gray-400 text-sm">Empty</span>
-              ) : (
-                graph.heap
-                  .sort((a, b) => a.distance - b.distance)
-                  .map((item, index) => (
-                    <div
-                      key={`${item.nodeId}-${item.distance}`}
-                      className="bg-purple-700 text-white px-3 py-2 rounded text-sm border-2"
-                      style={{
-                        borderColor: index === 0 ? '#f59e0b' : '#6b21a8'
-                      }}
-                    >
-                      Node {item.nodeId}: {item.distance}
-                    </div>
-                  ))
-              )}
+            {/* Heap State */}
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 flex flex-col">
+              <h3 className="text-white text-lg font-bold mb-3">Priority Queue</h3>
+
+              <div className="flex gap-3 flex-1">
+                {/* Heap Tree Visualization */}
+                <div className="flex-1">
+                  <h4 className="text-gray-300 text-sm font-semibold mb-2">Min-Heap Structure:</h4>
+                  <div className="relative flex-1 bg-gray-800 rounded p-2">
+                    {graph.heap.length === 0 ? (
+                      <span className="text-gray-400 text-xs">Empty</span>
+                    ) : (
+                      <svg width="100%" height="100%" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">
+                        {graph.heap
+                          .sort((a, b) => a.distance - b.distance)
+                          .slice(0, 7) // Show max 7 nodes in tree
+                          .map((item, index) => {
+                            const level = Math.floor(Math.log2(index + 1));
+                            const posInLevel = index - (Math.pow(2, level) - 1);
+                            const x = 120 + (posInLevel - Math.pow(2, level) / 2 + 0.5) * (140 / Math.pow(2, level));
+                            const y = 20 + level * 30;
+
+                            return (
+                              <g key={`heap-${item.nodeId}-${index}`}>
+                                <circle
+                                  cx={x}
+                                  cy={y}
+                                  r="10"
+                                  fill={index === 0 ? '#f59e0b' : '#8b5cf6'}
+                                  stroke="#374151"
+                                  strokeWidth="1"
+                                />
+                                <text
+                                  x={x}
+                                  y={y + 3}
+                                  textAnchor="middle"
+                                  fontSize="9"
+                                  fill="white"
+                                  fontWeight="bold"
+                                >
+                                  {item.distance}
+                                </text>
+                              </g>
+                            );
+                          })}
+                      </svg>
+                    )}
+                  </div>
+                </div>
+
+                {/* Priority Queue List - Sidebar */}
+                <div className="w-24">
+                  <h4 className="text-gray-300 text-sm font-semibold mb-2">Queue:</h4>
+                  <div className="space-y-1">
+                    {graph.heap.length === 0 ? (
+                      <span className="text-gray-400 text-xs">Empty</span>
+                    ) : (
+                      graph.heap
+                        .sort((a, b) => a.distance - b.distance)
+                        .slice(0, 6) // Show more items since they're smaller
+                        .map((item, index) => (
+                          <div
+                            key={`${item.nodeId}-${item.distance}`}
+                            className={`p-1 rounded text-xs transition-all duration-500 text-center ${
+                              index === 0
+                                ? 'bg-amber-700 border border-amber-400'
+                                : 'bg-purple-700'
+                            }`}
+                          >
+                            <div className="text-white font-bold">N{item.nodeId}</div>
+                            <div className="text-white text-xs">{item.distance}</div>
+                            {index === 0 && (
+                              <div className="text-amber-200 text-xs">MIN</div>
+                            )}
+                          </div>
+                        ))
+                    )}
+                    {graph.heap.length > 6 && (
+                      <div className="text-gray-400 text-xs text-center">
+                        +{graph.heap.length - 6}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
