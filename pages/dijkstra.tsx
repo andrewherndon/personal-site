@@ -200,6 +200,7 @@ const DijkstraVisualizer = () => {
 
         if (newDistance < nodes[neighborId].distance) {
           nodes[neighborId].distance = newDistance;
+          // @ts-expect-error TypeScript can't infer currentNodeId is valid number here
           nodes[neighborId].previous = currentNodeId;
 
           // Add to heap if not already there with better distance
@@ -271,7 +272,7 @@ const DijkstraVisualizer = () => {
   return (
     <>
       <Head>
-        <title>Algorithm Visualizer - Dijkstra's Algorithm (Heap-based)</title>
+        <title>Algorithm Visualizer - Dijkstra&apos;s Algorithm (Heap-based)</title>
         <meta name="description" content="Interactive visualization of Dijkstra's shortest path algorithm using heap" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -281,7 +282,7 @@ const DijkstraVisualizer = () => {
           {/* Header */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-white mb-2">
-              Dijkstra's Algorithm (Heap-based)
+              Dijkstra&apos;s Algorithm (Heap-based)
             </h1>
             <p className="text-gray-400 text-sm">
               Find shortest paths from source to all vertices using priority queue
@@ -510,6 +511,41 @@ const DijkstraVisualizer = () => {
                       <span className="text-gray-400 text-xs">Empty</span>
                     ) : (
                       <svg width="100%" height="100%" viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet">
+                        {/* Heap tree edges */}
+                        {graph.heap
+                          .sort((a, b) => a.distance - b.distance)
+                          .slice(0, 7) // Show max 7 nodes in tree
+                          .map((_, index) => {
+                            if (index === 0) return null; // Root has no parent
+
+                            const parentIndex = Math.floor((index - 1) / 2);
+
+                            // Current node position
+                            const level = Math.floor(Math.log2(index + 1));
+                            const posInLevel = index - (Math.pow(2, level) - 1);
+                            const x = 120 + (posInLevel - Math.pow(2, level) / 2 + 0.5) * (140 / Math.pow(2, level));
+                            const y = 20 + level * 30;
+
+                            // Parent node position
+                            const parentLevel = Math.floor(Math.log2(parentIndex + 1));
+                            const parentPosInLevel = parentIndex - (Math.pow(2, parentLevel) - 1);
+                            const parentX = 120 + (parentPosInLevel - Math.pow(2, parentLevel) / 2 + 0.5) * (140 / Math.pow(2, parentLevel));
+                            const parentY = 20 + parentLevel * 30;
+
+                            return (
+                              <line
+                                key={`heap-edge-${index}`}
+                                x1={parentX}
+                                y1={parentY}
+                                x2={x}
+                                y2={y}
+                                stroke="#6b7280"
+                                strokeWidth="1"
+                              />
+                            );
+                          })}
+
+                        {/* Heap tree nodes */}
                         {graph.heap
                           .sort((a, b) => a.distance - b.distance)
                           .slice(0, 7) // Show max 7 nodes in tree

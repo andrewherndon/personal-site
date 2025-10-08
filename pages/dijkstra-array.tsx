@@ -38,21 +38,56 @@ const DijkstraArrayVisualizer = () => {
   const [currentStep, setCurrentStep] = useState('');
   const [speed, setSpeed] = useState(800);
   const [startNode, setStartNode] = useState(0);
+  const [graphComplexity, setGraphComplexity] = useState<'simple' | 'medium' | 'complex'>('medium');
   const [isPaused, setIsPaused] = useState(false);
-  const [shouldStop, setShouldStop] = useState(false);
+  const [, setShouldStop] = useState(false);
   const isPausedRef = useRef(false);
   const shouldStopRef = useRef(false);
 
   // Generate sample graph
   const generateGraph = useCallback(() => {
-    const nodeCount = 6;
+    let nodeCount: number;
+    let edgeList: number[][];
+    let radius: number;
+
+    // Configure based on complexity
+    switch (graphComplexity) {
+      case 'simple':
+        nodeCount = 5;
+        radius = 100;
+        edgeList = [
+          [0, 1, 6], [0, 2, 1], [1, 2, 5], [1, 3, 2],
+          [2, 3, 2], [2, 4, 1], [3, 4, 1]
+        ];
+        break;
+      case 'medium':
+        nodeCount = 6;
+        radius = 120;
+        edgeList = [
+          [0, 1, 7], [0, 2, 9], [0, 5, 14],
+          [1, 2, 10], [1, 3, 15],
+          [2, 3, 11], [2, 5, 2],
+          [3, 4, 6], [4, 5, 9]
+        ];
+        break;
+      case 'complex':
+        nodeCount = 10;
+        radius = 140;
+        edgeList = [
+          [0, 1, 7], [0, 2, 9], [0, 5, 14], [1, 2, 10], [1, 3, 15],
+          [2, 3, 11], [2, 5, 2], [3, 4, 6], [3, 6, 9], [4, 6, 2],
+          [4, 7, 16], [5, 6, 8], [5, 8, 4], [6, 7, 3], [6, 9, 7],
+          [7, 9, 1], [8, 9, 12]
+        ];
+        break;
+    }
+
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
     // Create nodes in a circle layout
     for (let i = 0; i < nodeCount; i++) {
       const angle = (i * 2 * Math.PI) / nodeCount;
-      const radius = 120;
       const x = 250 + radius * Math.cos(angle);
       const y = 150 + radius * Math.sin(angle);
 
@@ -67,15 +102,7 @@ const DijkstraArrayVisualizer = () => {
       });
     }
 
-    // Create sample edges - smaller graph for clearer visualization
-    const edgeList = [
-      [0, 1, 7], [0, 2, 9], [0, 5, 14],
-      [1, 2, 10], [1, 3, 15],
-      [2, 3, 11], [2, 5, 2],
-      [3, 4, 6],
-      [4, 5, 9]
-    ];
-
+    // Create edges from edge list
     edgeList.forEach(([from, to, weight]) => {
       if (from < nodeCount && to < nodeCount) {
         edges.push({ from, to, weight });
@@ -90,8 +117,8 @@ const DijkstraArrayVisualizer = () => {
       currentNode: null,
       candidates: [startNode]
     });
-    setCurrentStep('Graph generated - Ready to find shortest paths');
-  }, [startNode]);
+    setCurrentStep(`Graph generated (${graphComplexity} - ${nodeCount} nodes, ${edges.length / 2} edges) - Ready to find shortest paths`);
+  }, [startNode, graphComplexity]);
 
   // Sleep function for animation delays
   const sleep = async (ms: number) => {
@@ -139,7 +166,7 @@ const DijkstraArrayVisualizer = () => {
 
     while (candidates.length > 0 && !shouldStopRef.current) {
       // Find unvisited node with minimum distance
-      let currentNodeId = -1;
+      let currentNodeId: number = -1;
       let minDistance = Infinity;
 
       for (const candidateId of candidates) {
@@ -150,6 +177,9 @@ const DijkstraArrayVisualizer = () => {
       }
 
       if (currentNodeId === -1 || minDistance === Infinity) break;
+
+      // At this point, currentNodeId is guaranteed to be a valid node index
+      if (currentNodeId < 0) break; // Additional safety check for TypeScript
 
       // Mark as visited
       nodes[currentNodeId].visited = true;
@@ -185,6 +215,7 @@ const DijkstraArrayVisualizer = () => {
 
         if (newDistance < nodes[neighborId].distance) {
           nodes[neighborId].distance = newDistance;
+          // @ts-expect-error TypeScript can't infer currentNodeId is valid number here
           nodes[neighborId].previous = currentNodeId;
           nodes[neighborId].isCandidate = true;
 
@@ -257,7 +288,7 @@ const DijkstraArrayVisualizer = () => {
   return (
     <>
       <Head>
-        <title>Algorithm Visualizer - Dijkstra's Algorithm (Array-based)</title>
+        <title>Algorithm Visualizer - Dijkstra&apos;s Algorithm (Array-based)</title>
         <meta name="description" content="Interactive visualization of Dijkstra's shortest path algorithm using array" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -267,7 +298,7 @@ const DijkstraArrayVisualizer = () => {
           {/* Header */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-white mb-2">
-              Dijkstra's Algorithm (Array-based)
+              Dijkstra&apos;s Algorithm (Array-based)
             </h1>
             <p className="text-gray-400 text-sm">
               Find shortest paths by scanning array for minimum distance candidate
@@ -324,6 +355,20 @@ const DijkstraArrayVisualizer = () => {
                   </button>
                 </div>
               )}
+
+              <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
+                <label className="text-gray-300 text-sm">Complexity:</label>
+                <select
+                  value={graphComplexity}
+                  onChange={(e) => setGraphComplexity(e.target.value as 'simple' | 'medium' | 'complex')}
+                  disabled={isAnimating}
+                  className="bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                >
+                  <option value="simple">Simple (5 nodes)</option>
+                  <option value="medium">Medium (6 nodes)</option>
+                  <option value="complex">Complex (10 nodes)</option>
+                </select>
+              </div>
 
               <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
                 <label className="text-gray-300 text-sm">Start Node:</label>
@@ -394,7 +439,7 @@ const DijkstraArrayVisualizer = () => {
               <div className="relative" style={{ height: '300px', width: '100%' }}>
                 <svg width="100%" height="100%" viewBox="0 0 500 300">
                   {/* Edges */}
-                  {graph.edges.map((edge, index) => {
+                  {graph.edges.map((edge) => {
                     const fromNode = graph.nodes[edge.from];
                     const toNode = graph.nodes[edge.to];
                     if (!fromNode || !toNode) return null;
