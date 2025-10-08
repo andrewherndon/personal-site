@@ -37,20 +37,55 @@ const DijkstraVisualizer = () => {
   const [currentStep, setCurrentStep] = useState('');
   const [speed, setSpeed] = useState(800);
   const [startNode, setStartNode] = useState(0);
+  const [graphComplexity, setGraphComplexity] = useState<'simple' | 'medium' | 'complex'>('medium');
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(false);
   const shouldStopRef = useRef(false);
 
   // Generate sample graph
   const generateGraph = useCallback(() => {
-    const nodeCount = 8;
+    let nodeCount: number;
+    let edgeList: number[][];
+    let radius: number;
+
+    // Configure based on complexity
+    switch (graphComplexity) {
+      case 'simple':
+        nodeCount = 5;
+        radius = 100;
+        edgeList = [
+          [0, 1, 6], [0, 2, 1], [1, 2, 5], [1, 3, 2],
+          [2, 3, 2], [2, 4, 1], [3, 4, 1]
+        ];
+        break;
+      case 'medium':
+        nodeCount = 8;
+        radius = 120;
+        edgeList = [
+          [0, 1, 4], [0, 7, 8], [1, 2, 8], [1, 7, 11],
+          [2, 3, 7], [2, 5, 4], [3, 4, 9], [3, 5, 14],
+          [4, 5, 10], [5, 6, 2], [6, 7, 1], [7, 0, 8]
+        ];
+        break;
+      case 'complex':
+        nodeCount = 12;
+        radius = 140;
+        edgeList = [
+          [0, 1, 7], [0, 2, 9], [0, 5, 14], [1, 2, 10], [1, 3, 15],
+          [2, 3, 11], [2, 5, 2], [3, 4, 6], [3, 6, 9], [4, 6, 2],
+          [4, 7, 16], [5, 6, 8], [5, 8, 4], [6, 7, 3], [6, 9, 7],
+          [7, 9, 1], [7, 10, 5], [8, 9, 12], [8, 11, 8], [9, 10, 4],
+          [9, 11, 6], [10, 11, 3]
+        ];
+        break;
+    }
+
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
     // Create nodes in a circle layout
     for (let i = 0; i < nodeCount; i++) {
       const angle = (i * 2 * Math.PI) / nodeCount;
-      const radius = 120;
       const x = 250 + radius * Math.cos(angle);
       const y = 150 + radius * Math.sin(angle);
 
@@ -64,15 +99,7 @@ const DijkstraVisualizer = () => {
       });
     }
 
-    // Create random edges with weights
-    const edgeList = [
-      [0, 1, 4], [0, 7, 8], [1, 2, 8], [1, 7, 11],
-      [2, 3, 7], [2, 8, 2], [2, 5, 4], [3, 4, 9],
-      [3, 5, 14], [4, 5, 10], [5, 6, 2], [6, 7, 1],
-      [6, 8, 6], [7, 8, 7]
-    ];
-
-    // Only use edges that exist for our node count
+    // Create edges from edge list
     edgeList.forEach(([from, to, weight]) => {
       if (from < nodeCount && to < nodeCount) {
         edges.push({ from, to, weight });
@@ -87,8 +114,8 @@ const DijkstraVisualizer = () => {
       currentNode: null,
       heap: [{ nodeId: startNode, distance: 0 }]
     });
-    setCurrentStep('Graph generated - Ready to find shortest paths');
-  }, [startNode]);
+    setCurrentStep(`Graph generated (${graphComplexity} - ${nodeCount} nodes, ${edges.length / 2} edges) - Ready to find shortest paths`);
+  }, [startNode, graphComplexity]);
 
   // Sleep function for animation delays
   const sleep = async (ms: number) => {
@@ -311,6 +338,20 @@ const DijkstraVisualizer = () => {
                   </button>
                 </div>
               )}
+
+              <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
+                <label className="text-gray-300 text-sm">Complexity:</label>
+                <select
+                  value={graphComplexity}
+                  onChange={(e) => setGraphComplexity(e.target.value as 'simple' | 'medium' | 'complex')}
+                  disabled={isAnimating}
+                  className="bg-gray-700 text-white rounded px-2 py-1 text-sm"
+                >
+                  <option value="simple">Simple (5 nodes)</option>
+                  <option value="medium">Medium (8 nodes)</option>
+                  <option value="complex">Complex (12 nodes)</option>
+                </select>
+              </div>
 
               <div className="flex items-center gap-2 bg-gray-800 rounded px-3 py-2">
                 <label className="text-gray-300 text-sm">Start Node:</label>
