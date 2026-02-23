@@ -67,7 +67,7 @@ export default function Home() {
           </div>
 
           <p className="text-lg sm:text-xl text-[#FAF7F0] leading-relaxed font-medium drop-shadow">
-            Hi I'm Andrew! Here's a brief summary of some of my professional accomplishments. I like to build stuff relating to language and finance.
+            Hi I&apos;m Andrew! Here&apos;s a brief summary of some of my professional accomplishments. I like to build stuff relating to language and finance.
           </p>
 
           <div className="flex flex-wrap gap-4 sm:gap-8 text-lg sm:text-xl text-[#FAF7F0] font-semibold justify-center sm:justify-start">
