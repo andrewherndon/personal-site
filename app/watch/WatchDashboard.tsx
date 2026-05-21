@@ -34,6 +34,14 @@ type Status = {
   pending_messages: { id: number; text: string }[]
 }
 
+type Health = {
+  version: string
+  db_ok: boolean
+  dnsmasq_running: boolean
+  dns_locked: boolean
+  allowlist: { id: number; domain: string }[]
+}
+
 type LogEntry = {
   id: number
   ts: number
@@ -58,6 +66,24 @@ function timeSince(iso: string): string {
   if (diff < 60) return `${diff}s ago`
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
   return `${Math.floor(diff / 3600)}h ago`
+}
+
+function StatusPill({ label, ok, detail, neutral }: {
+  label: string; ok: boolean; detail?: string; neutral?: boolean
+}) {
+  return (
+    <div className="bg-[#3a0000]/50 border border-[#D4AF37]/15 px-4 py-3 flex items-center justify-between">
+      <span className="text-xs text-[#FAF7F0]/50 uppercase tracking-wide">{label}</span>
+      <div className="flex items-center gap-2">
+        {detail && <span className="text-xs text-[#FAF7F0]/40">{detail}</span>}
+        {!neutral && (
+          <span className={`text-xs font-medium ${ok ? 'text-green-400' : 'text-red-400'}`}>
+            {ok ? 'ok' : 'down'}
+          </span>
+        )}
+      </div>
+    </div>
+  )
 }
 
 function Bar({ value, max }: { value: number; max: number }) {
@@ -107,8 +133,10 @@ const RULE_LABELS: Record<string, string> = {
 
 export default function WatchDashboard() {
   const [status, setStatus] = useState<Status | null>(null)
+  const [health, setHealth] = useState<Health | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [msg, setMsg] = useState('')
+  const [newDomain, setNewDomain] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -126,6 +154,13 @@ export default function WatchDashboard() {
     }
   }, [router])
 
+  const fetchHealth = useCallback(async () => {
+    try {
+      const res = await fetch('/api/heimdall/health')
+      if (res.ok) setHealth(await res.json())
+    } catch {}
+  }, [])
+
   const fetchLogs = useCallback(async () => {
     try {
       const res = await fetch('/api/heimdall/logs?limit=20')
@@ -134,11 +169,10 @@ export default function WatchDashboard() {
   }, [])
 
   useEffect(() => {
-    fetchStatus()
-    fetchLogs()
-    const iv = setInterval(() => { fetchStatus(); fetchLogs() }, 30000)
+    fetchStatus(); fetchHealth(); fetchLogs()
+    const iv = setInterval(() => { fetchStatus(); fetchHealth(); fetchLogs() }, 30000)
     return () => clearInterval(iv)
-  }, [fetchStatus, fetchLogs])
+  }, [fetchStatus, fetchHealth, fetchLogs])
 
   async function post(path: string, body: object) {
     return fetch(`/api/heimdall/${path}`, {
@@ -185,6 +219,23 @@ export default function WatchDashboard() {
     router.refresh()
   }
 
+  async function handleAddDomain(e: React.FormEvent) {
+    e.preventDefault()
+    if (!newDomain.trim()) return
+    setBusy(true)
+    await post('dns/allowlist', { domain: newDomain.trim() })
+    setNewDomain('')
+    await fetchHealth()
+    setBusy(false)
+  }
+
+  async function handleRemoveDomain(id: number) {
+    setBusy(true)
+    await fetch(`/api/heimdall/dns/allowlist/${id}`, { method: 'DELETE' })
+    await fetchHealth()
+    setBusy(false)
+  }
+
   const t = status?.today
 
   return (
@@ -220,6 +271,31 @@ export default function WatchDashboard() {
           {error}
         </div>
       )}
+
+      {/* System */}
+      <div>
+        <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">System</p>
+        <div className="grid grid-cols-2 gap-2">
+          <StatusPill
+            label="RPi Server"
+            ok={!!health}
+            detail={health ? `v${health.version}` : 'unreachable'}
+          />
+          <StatusPill label="Database" ok={health?.db_ok ?? false} />
+          <StatusPill label="dnsmasq" ok={health?.dnsmasq_running ?? false} />
+          <StatusPill
+            label="DNS Mode"
+            ok={true}
+            neutral
+            detail={health ? (health.dns_locked ? 'allowlist' : 'forwarding') : '—'}
+          />
+          <StatusPill
+            label="Agent"
+            ok={status?.agent_online ?? false}
+            detail={status?.last_heartbeat ? timeSince(status.last_heartbeat) : 'never'}
+          />
+        </div>
+      </div>
 
       {/* Status banner */}
       {status && (
@@ -302,6 +378,47 @@ export default function WatchDashboard() {
             </button>
           </form>
         </div>
+      </div>
+
+      {/* DNS Allowlist */}
+      <div>
+        <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">DNS Allowlist</p>
+        <div className="border border-[#D4AF37]/10 mb-3">
+          {!health || health.allowlist.length === 0 ? (
+            <div className="px-4 py-3 text-sm text-[#FAF7F0]/25">No domains.</div>
+          ) : health.allowlist.map((d, i) => (
+            <div
+              key={d.id}
+              className="flex items-center justify-between px-4 py-2 text-sm"
+              style={{ borderTop: i > 0 ? '1px solid rgba(212,175,55,0.06)' : undefined }}
+            >
+              <span className="text-[#FAF7F0]/60 font-mono">{d.domain}</span>
+              <button
+                onClick={() => handleRemoveDomain(d.id)}
+                disabled={busy}
+                className="text-xs text-red-400/50 hover:text-red-400 disabled:opacity-40 transition-colors"
+              >
+                remove
+              </button>
+            </div>
+          ))}
+        </div>
+        <form onSubmit={handleAddDomain} className="flex gap-2">
+          <input
+            type="text"
+            value={newDomain}
+            onChange={e => setNewDomain(e.target.value)}
+            placeholder="example.com"
+            className="flex-1 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm font-mono placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
+          />
+          <button
+            type="submit"
+            disabled={busy || !newDomain.trim()}
+            className="px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] text-sm hover:bg-[#D4AF37]/10 disabled:opacity-40 transition-colors"
+          >
+            Add
+          </button>
+        </form>
       </div>
 
       {/* Log */}
