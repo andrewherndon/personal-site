@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { verifySession } from '@/lib/watch-auth'
 
-const BASE = process.env.HEIMDALL_API_URL
-const KEY = process.env.HEIMDALL_API_KEY
+const BASE = process.env.POIMENAS_API_URL
+const KEY = process.env.POIMENAS_API_KEY
 
 async function handler(
   req: NextRequest,

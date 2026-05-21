@@ -143,7 +143,7 @@ export default function WatchDashboard() {
 
   const fetchStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/heimdall/status')
+      const res = await fetch('/api/poimenas/status')
       if (res.status === 401) { router.refresh(); return }
       const data = await res.json()
       if (data.error) { setError(data.error); return }
@@ -156,14 +156,14 @@ export default function WatchDashboard() {
 
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch('/api/heimdall/health')
+      const res = await fetch('/api/poimenas/health')
       if (res.ok) setHealth(await res.json())
     } catch {}
   }, [])
 
   const fetchLogs = useCallback(async () => {
     try {
-      const res = await fetch('/api/heimdall/logs?limit=20')
+      const res = await fetch('/api/poimenas/logs?limit=20')
       if (res.ok) setLogs(await res.json())
     } catch {}
   }, [])
@@ -175,7 +175,7 @@ export default function WatchDashboard() {
   }, [fetchStatus, fetchHealth, fetchLogs])
 
   async function post(path: string, body: object) {
-    return fetch(`/api/heimdall/${path}`, {
+    return fetch(`/api/poimenas/${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -231,7 +231,7 @@ export default function WatchDashboard() {
 
   async function handleRemoveDomain(id: number) {
     setBusy(true)
-    await fetch(`/api/heimdall/dns/allowlist/${id}`, { method: 'DELETE' })
+    await fetch(`/api/poimenas/dns/allowlist/${id}`, { method: 'DELETE' })
     await fetchHealth()
     setBusy(false)
   }
