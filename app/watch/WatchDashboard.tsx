@@ -22,7 +22,10 @@ type Rule = {
   duolingo_target_seconds: number
   gaming_cap_seconds: number
   earn_rate: number
+  priority: number
 } | null
+
+type RuleRecord = NonNullable<Rule>
 
 type Status = {
   locked: boolean
@@ -49,7 +52,10 @@ type LogEntry = {
   detail: string | null
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 function fmt(s: number): string {
+  if (s <= 0) return '0s'
   if (s < 60) return `${s}s`
   if (s < 3600) return `${Math.floor(s / 60)}m`
   const h = Math.floor(s / 3600)
@@ -67,6 +73,31 @@ function timeSince(iso: string): string {
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
   return `${Math.floor(diff / 3600)}h ago`
 }
+
+function ruleDetail(r: RuleRecord): string {
+  if (r.type === 'free') return 'free day'
+  if (r.type === 'cap') return `${fmt(r.gaming_cap_seconds)} cap`
+  if (r.type === 'prerequisite') {
+    const parts: string[] = []
+    if (r.anki_target) parts.push(`${r.anki_target} anki`)
+    if (r.seterra_target_seconds) parts.push(`${fmt(r.seterra_target_seconds)} seterra`)
+    if (r.duolingo_target_seconds) parts.push(`${fmt(r.duolingo_target_seconds)} duolingo`)
+    return parts.join(' · ') || 'no targets'
+  }
+  if (r.type === 'earn_more') {
+    return `${fmt(r.gaming_cap_seconds)} base · ${r.earn_rate}× earn rate`
+  }
+  return ''
+}
+
+const RULE_LABELS: Record<string, string> = {
+  prerequisite: 'Prerequisite',
+  cap: 'Time cap',
+  earn_more: 'Earn more',
+  free: 'Free day',
+}
+
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatusPill({ label, ok, detail, neutral }: {
   label: string; ok: boolean; detail?: string; neutral?: boolean
@@ -99,10 +130,7 @@ function Bar({ value, max }: { value: number; max: number }) {
 }
 
 function StatCard({ label, value, target, asTime }: {
-  label: string
-  value: number
-  target: number
-  asTime?: boolean
+  label: string; value: number; target: number; asTime?: boolean
 }) {
   const done = target > 0 && value >= target
   return (
@@ -124,22 +152,36 @@ function StatCard({ label, value, target, asTime }: {
   )
 }
 
-const RULE_LABELS: Record<string, string> = {
-  prerequisite: 'Prerequisite',
-  cap: 'Time cap',
-  earn_more: 'Earn more',
-  free: 'Free day',
+// ── Form defaults ─────────────────────────────────────────────────────────────
+
+const BLANK_RULE = {
+  day: 'default',
+  type: 'prerequisite' as RuleRecord['type'],
+  anki_target: 0,
+  seterra_mins: 0,
+  duolingo_mins: 0,
+  gaming_cap_hours: 2,
+  earn_rate: 2,
+  priority: 0,
 }
 
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function WatchDashboard() {
-  const [status, setStatus] = useState<Status | null>(null)
-  const [health, setHealth] = useState<Health | null>(null)
-  const [logs, setLogs] = useState<LogEntry[]>([])
-  const [msg, setMsg] = useState('')
+  const [status, setStatus]   = useState<Status | null>(null)
+  const [health, setHealth]   = useState<Health | null>(null)
+  const [rules, setRules]     = useState<RuleRecord[]>([])
+  const [logs, setLogs]       = useState<LogEntry[]>([])
+  const [msg, setMsg]         = useState('')
   const [newDomain, setNewDomain] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [lockMins, setLockMins]   = useState('')
+  const [newRule, setNewRule]     = useState(BLANK_RULE)
+  const [showRuleForm, setShowRuleForm] = useState(false)
+  const [busy, setBusy]   = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+
+  // ── Fetchers ──────────────────────────────────────────────────────────────
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -161,6 +203,13 @@ export default function WatchDashboard() {
     } catch {}
   }, [])
 
+  const fetchRules = useCallback(async () => {
+    try {
+      const res = await fetch('/api/poimenas/rules')
+      if (res.ok) setRules(await res.json())
+    } catch {}
+  }, [])
+
   const fetchLogs = useCallback(async () => {
     try {
       const res = await fetch('/api/poimenas/logs?limit=20')
@@ -169,10 +218,12 @@ export default function WatchDashboard() {
   }, [])
 
   useEffect(() => {
-    fetchStatus(); fetchHealth(); fetchLogs()
-    const iv = setInterval(() => { fetchStatus(); fetchHealth(); fetchLogs() }, 30000)
+    fetchStatus(); fetchHealth(); fetchRules(); fetchLogs()
+    const iv = setInterval(() => { fetchStatus(); fetchHealth(); fetchRules(); fetchLogs() }, 30000)
     return () => clearInterval(iv)
-  }, [fetchStatus, fetchHealth, fetchLogs])
+  }, [fetchStatus, fetchHealth, fetchRules, fetchLogs])
+
+  // ── API helpers ───────────────────────────────────────────────────────────
 
   async function post(path: string, body: object) {
     return fetch(`/api/poimenas/${path}`, {
@@ -182,11 +233,23 @@ export default function WatchDashboard() {
     })
   }
 
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
   async function handleLock(locked: boolean) {
     setBusy(true)
     await post('lock', { locked, reason: locked ? 'manual' : '' })
-    await fetchStatus()
-    await fetchLogs()
+    await fetchStatus(); await fetchLogs()
+    setBusy(false)
+  }
+
+  async function handleTimedLock(e: React.FormEvent) {
+    e.preventDefault()
+    const mins = parseInt(lockMins)
+    if (!mins || mins <= 0) return
+    setBusy(true)
+    await post('lock', { locked: true, reason: 'manual', duration_minutes: mins })
+    setLockMins('')
+    await fetchStatus(); await fetchLogs()
     setBusy(false)
   }
 
@@ -199,8 +262,7 @@ export default function WatchDashboard() {
       gaming_cap_seconds: 0, earn_rate: 0,
     })
     await post('lock', { locked: false, reason: 'free day' })
-    await fetchStatus()
-    await fetchLogs()
+    await fetchStatus(); await fetchRules(); await fetchLogs()
     setBusy(false)
   }
 
@@ -211,6 +273,32 @@ export default function WatchDashboard() {
     await post('message', { text: msg })
     setMsg('')
     await fetchLogs()
+    setBusy(false)
+  }
+
+  async function handleCreateRule(e: React.FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    await post('rules', {
+      day: newRule.day.trim(),
+      type: newRule.type,
+      anki_target: newRule.anki_target,
+      seterra_target_seconds: newRule.seterra_mins * 60,
+      duolingo_target_seconds: newRule.duolingo_mins * 60,
+      gaming_cap_seconds: newRule.gaming_cap_hours * 3600,
+      earn_rate: newRule.earn_rate,
+      priority: newRule.priority,
+    })
+    setNewRule(BLANK_RULE)
+    setShowRuleForm(false)
+    await fetchRules(); await fetchStatus()
+    setBusy(false)
+  }
+
+  async function handleDeleteRule(id: number) {
+    setBusy(true)
+    await fetch(`/api/poimenas/rules/${id}`, { method: 'DELETE' })
+    await fetchRules(); await fetchStatus(); await fetchLogs()
     setBusy(false)
   }
 
@@ -237,6 +325,9 @@ export default function WatchDashboard() {
   }
 
   const t = status?.today
+  const nr = newRule
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="max-w-2xl mx-auto px-6 pt-20 pb-24 relative z-10 space-y-8">
@@ -276,24 +367,11 @@ export default function WatchDashboard() {
       <div>
         <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">System</p>
         <div className="grid grid-cols-2 gap-2">
-          <StatusPill
-            label="RPi Server"
-            ok={!!health}
-            detail={health ? `v${health.version}` : 'unreachable'}
-          />
+          <StatusPill label="RPi Server" ok={!!health} detail={health ? `v${health.version}` : 'unreachable'} />
           <StatusPill label="Database" ok={health?.db_ok ?? false} />
           <StatusPill label="dnsmasq" ok={health?.dnsmasq_running ?? false} />
-          <StatusPill
-            label="DNS Mode"
-            ok={true}
-            neutral
-            detail={health ? (health.dns_locked ? 'allowlist' : 'forwarding') : '—'}
-          />
-          <StatusPill
-            label="Agent"
-            ok={status?.agent_online ?? false}
-            detail={status?.last_heartbeat ? timeSince(status.last_heartbeat) : 'never'}
-          />
+          <StatusPill label="DNS Mode" ok neutral detail={health ? (health.dns_locked ? 'allowlist' : 'forwarding') : '—'} />
+          <StatusPill label="Agent" ok={status?.agent_online ?? false} detail={status?.last_heartbeat ? timeSince(status.last_heartbeat) : 'never'} />
         </div>
       </div>
 
@@ -314,8 +392,11 @@ export default function WatchDashboard() {
               {status.rule
                 ? `${RULE_LABELS[status.rule.type]} · ${status.rule.day}`
                 : 'No rule active'}
-              {status.reason && status.reason !== 'prerequisite'
-                ? ` · ${status.reason}` : ''}
+              {status.reason === 'bypass'
+                ? ' · daily bypass active'
+                : status.reason && status.reason !== 'prerequisite'
+                  ? ` · ${status.reason}`
+                  : ''}
             </div>
           </div>
           <div className="flex gap-2">
@@ -337,7 +418,7 @@ export default function WatchDashboard() {
         </div>
       )}
 
-      {/* Progress */}
+      {/* Today's progress */}
       {t && (
         <div>
           <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">Today</p>
@@ -350,23 +431,190 @@ export default function WatchDashboard() {
         </div>
       )}
 
+      {/* Rules */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50">Rules</p>
+          <button
+            onClick={() => setShowRuleForm(v => !v)}
+            className="text-xs text-[#D4AF37]/60 hover:text-[#D4AF37] transition-colors"
+          >
+            {showRuleForm ? 'cancel' : '+ new rule'}
+          </button>
+        </div>
+
+        {/* Rule list */}
+        <div className="border border-[#D4AF37]/10 mb-3">
+          {rules.length === 0 ? (
+            <div className="px-4 py-3 text-sm text-[#FAF7F0]/25">No rules configured.</div>
+          ) : rules.map((r, i) => (
+            <div
+              key={r.id}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm"
+              style={{ borderTop: i > 0 ? '1px solid rgba(212,175,55,0.06)' : undefined }}
+            >
+              <span className="text-[#FAF7F0]/30 font-mono w-16 shrink-0 text-xs">{r.day}</span>
+              <span className="text-[#D4AF37]/70 w-20 shrink-0">{RULE_LABELS[r.type]}</span>
+              <span className="text-[#FAF7F0]/40 text-xs flex-1 truncate">{ruleDetail(r)}</span>
+              {r.priority > 0 && (
+                <span className="text-[#FAF7F0]/20 text-xs shrink-0">p{r.priority}</span>
+              )}
+              <button
+                onClick={() => handleDeleteRule(r.id)}
+                disabled={busy}
+                className="text-xs text-red-400/40 hover:text-red-400 disabled:opacity-40 transition-colors shrink-0"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* New rule form */}
+        {showRuleForm && (
+          <form onSubmit={handleCreateRule} className="border border-[#D4AF37]/15 p-4 space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-xs text-[#FAF7F0]/30 block mb-1">Day</label>
+                <input
+                  type="text"
+                  value={nr.day}
+                  onChange={e => setNewRule(r => ({ ...r, day: e.target.value }))}
+                  placeholder="default, mon, …"
+                  className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm placeholder-[#FAF7F0]/20 focus:outline-none focus:border-[#D4AF37]/40"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-[#FAF7F0]/30 block mb-1">Type</label>
+                <select
+                  value={nr.type}
+                  onChange={e => setNewRule(r => ({ ...r, type: e.target.value as RuleRecord['type'] }))}
+                  className="w-full bg-[#3a0000]/80 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                >
+                  <option value="prerequisite">Prerequisite</option>
+                  <option value="cap">Time cap</option>
+                  <option value="earn_more">Earn more</option>
+                  <option value="free">Free day</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-[#FAF7F0]/30 block mb-1">Priority</label>
+                <input
+                  type="number"
+                  value={nr.priority}
+                  onChange={e => setNewRule(r => ({ ...r, priority: parseInt(e.target.value) || 0 }))}
+                  className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                />
+              </div>
+            </div>
+
+            {/* Conditional fields */}
+            {(nr.type === 'cap' || nr.type === 'earn_more') && (
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs text-[#FAF7F0]/30 block mb-1">Gaming cap (hours)</label>
+                  <input
+                    type="number" step="0.5" min="0"
+                    value={nr.gaming_cap_hours}
+                    onChange={e => setNewRule(r => ({ ...r, gaming_cap_hours: parseFloat(e.target.value) || 0 }))}
+                    className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                  />
+                </div>
+                {nr.type === 'earn_more' && (
+                  <div>
+                    <label className="text-xs text-[#FAF7F0]/30 block mb-1">Earn rate (×)</label>
+                    <input
+                      type="number" step="0.5" min="0.5"
+                      value={nr.earn_rate}
+                      onChange={e => setNewRule(r => ({ ...r, earn_rate: parseFloat(e.target.value) || 1 }))}
+                      className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(nr.type === 'prerequisite' || nr.type === 'earn_more') && (
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-xs text-[#FAF7F0]/30 block mb-1">Anki cards</label>
+                  <input
+                    type="number" min="0"
+                    value={nr.anki_target}
+                    onChange={e => setNewRule(r => ({ ...r, anki_target: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#FAF7F0]/30 block mb-1">Seterra (min)</label>
+                  <input
+                    type="number" min="0"
+                    value={nr.seterra_mins}
+                    onChange={e => setNewRule(r => ({ ...r, seterra_mins: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-[#FAF7F0]/30 block mb-1">Duolingo (min)</label>
+                  <input
+                    type="number" min="0"
+                    value={nr.duolingo_mins}
+                    onChange={e => setNewRule(r => ({ ...r, duolingo_mins: parseInt(e.target.value) || 0 }))}
+                    className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
+                  />
+                </div>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy || !nr.day.trim()}
+              className="px-4 py-2 bg-[#D4AF37] text-[#4A0000] text-sm font-bold hover:bg-[#c4a030] disabled:opacity-40 transition-colors"
+            >
+              Create Rule
+            </button>
+          </form>
+        )}
+      </div>
+
       {/* Actions */}
       <div>
         <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">Actions</p>
         <div className="space-y-3">
-          <button
-            onClick={handleFreeDay}
-            disabled={busy}
-            className="px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] text-sm hover:bg-[#D4AF37]/10 disabled:opacity-40 transition-colors"
-          >
-            Set free day (today)
-          </button>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={handleFreeDay}
+              disabled={busy}
+              className="px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] text-sm hover:bg-[#D4AF37]/10 disabled:opacity-40 transition-colors"
+            >
+              Free day (today)
+            </button>
+          </div>
+
+          <form onSubmit={handleTimedLock} className="flex gap-2">
+            <input
+              type="number"
+              value={lockMins}
+              onChange={e => setLockMins(e.target.value)}
+              placeholder="minutes"
+              min="1"
+              className="w-28 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
+            />
+            <button
+              type="submit"
+              disabled={busy || !lockMins}
+              className="px-4 py-2 border border-red-400/30 text-red-400 text-sm hover:bg-red-900/20 disabled:opacity-40 transition-colors"
+            >
+              Lock for X min
+            </button>
+          </form>
+
           <form onSubmit={handleMessage} className="flex gap-2">
             <input
               type="text"
               value={msg}
               onChange={e => setMsg(e.target.value)}
-              placeholder="Send a message to the overlay…"
+              placeholder="Send a message to the widget…"
               className="flex-1 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
             />
             <button
