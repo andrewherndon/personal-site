@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 type Today = {
   anki_cards: number
   anki_target: number
@@ -23,9 +25,20 @@ type Rule = {
   gaming_cap_seconds: number
   earn_rate: number
   priority: number
+  start_hour: number | null
+  end_hour: number | null
 } | null
 
 type RuleRecord = NonNullable<Rule>
+
+type ExtensionRequest = {
+  id: number
+  ts: number
+  reason: string
+  duration_minutes: number
+  status: 'pending' | 'approved' | 'denied'
+  resolved_ts: number | null
+}
 
 type Status = {
   locked: boolean
@@ -35,6 +48,7 @@ type Status = {
   today: Today
   rule: Rule
   pending_messages: { id: number; text: string }[]
+  pending_extension: ExtensionRequest | null
 }
 
 type Health = {
@@ -50,6 +64,12 @@ type LogEntry = {
   ts: number
   type: string
   detail: string | null
+}
+
+type ProcessStat = {
+  date: string
+  process: string
+  seconds: number
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -84,9 +104,7 @@ function ruleDetail(r: RuleRecord): string {
     if (r.duolingo_target_seconds) parts.push(`${fmt(r.duolingo_target_seconds)} duolingo`)
     return parts.join(' · ') || 'no targets'
   }
-  if (r.type === 'earn_more') {
-    return `${fmt(r.gaming_cap_seconds)} base · ${r.earn_rate}× earn rate`
-  }
+  if (r.type === 'earn_more') return `${fmt(r.gaming_cap_seconds)} base · ${r.earn_rate}× earn`
   return ''
 }
 
@@ -96,6 +114,15 @@ const RULE_LABELS: Record<string, string> = {
   earn_more: 'Earn more',
   free: 'Free day',
 }
+
+const TYPE_COLOR: Record<string, string> = {
+  prerequisite: 'text-amber-400 bg-amber-400/10',
+  cap:          'text-blue-400 bg-blue-400/10',
+  earn_more:    'text-green-400 bg-green-400/10',
+  free:         'text-purple-400 bg-purple-400/10',
+}
+
+const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
@@ -163,16 +190,19 @@ const BLANK_RULE = {
   gaming_cap_hours: 2,
   earn_rate: 2,
   priority: 0,
+  start_hour: '',
+  end_hour: '',
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function WatchDashboard() {
-  const [status, setStatus]   = useState<Status | null>(null)
-  const [health, setHealth]   = useState<Health | null>(null)
-  const [rules, setRules]     = useState<RuleRecord[]>([])
-  const [logs, setLogs]       = useState<LogEntry[]>([])
-  const [msg, setMsg]         = useState('')
+  const [status, setStatus]     = useState<Status | null>(null)
+  const [health, setHealth]     = useState<Health | null>(null)
+  const [rules, setRules]       = useState<RuleRecord[]>([])
+  const [procStats, setProcStats] = useState<ProcessStat[]>([])
+  const [logs, setLogs]         = useState<LogEntry[]>([])
+  const [msg, setMsg]           = useState('')
   const [newDomain, setNewDomain] = useState('')
   const [lockMins, setLockMins]   = useState('')
   const [newRule, setNewRule]     = useState(BLANK_RULE)
@@ -191,9 +221,7 @@ export default function WatchDashboard() {
       if (data.error) { setError(data.error); return }
       setStatus(data)
       setError(null)
-    } catch {
-      setError('Connection failed')
-    }
+    } catch { setError('Connection failed') }
   }, [router])
 
   const fetchHealth = useCallback(async () => {
@@ -210,6 +238,13 @@ export default function WatchDashboard() {
     } catch {}
   }, [])
 
+  const fetchProcStats = useCallback(async () => {
+    try {
+      const res = await fetch('/api/poimenas/stats/processes')
+      if (res.ok) setProcStats(await res.json())
+    } catch {}
+  }, [])
+
   const fetchLogs = useCallback(async () => {
     try {
       const res = await fetch('/api/poimenas/logs?limit=20')
@@ -218,10 +253,12 @@ export default function WatchDashboard() {
   }, [])
 
   useEffect(() => {
-    fetchStatus(); fetchHealth(); fetchRules(); fetchLogs()
-    const iv = setInterval(() => { fetchStatus(); fetchHealth(); fetchRules(); fetchLogs() }, 30000)
+    fetchStatus(); fetchHealth(); fetchRules(); fetchProcStats(); fetchLogs()
+    const iv = setInterval(() => {
+      fetchStatus(); fetchHealth(); fetchRules(); fetchProcStats(); fetchLogs()
+    }, 30000)
     return () => clearInterval(iv)
-  }, [fetchStatus, fetchHealth, fetchRules, fetchLogs])
+  }, [fetchStatus, fetchHealth, fetchRules, fetchProcStats, fetchLogs])
 
   // ── API helpers ───────────────────────────────────────────────────────────
 
@@ -278,16 +315,19 @@ export default function WatchDashboard() {
 
   async function handleCreateRule(e: React.FormEvent) {
     e.preventDefault()
+    const nr = newRule
     setBusy(true)
     await post('rules', {
-      day: newRule.day.trim(),
-      type: newRule.type,
-      anki_target: newRule.anki_target,
-      seterra_target_seconds: newRule.seterra_mins * 60,
-      duolingo_target_seconds: newRule.duolingo_mins * 60,
-      gaming_cap_seconds: newRule.gaming_cap_hours * 3600,
-      earn_rate: newRule.earn_rate,
-      priority: newRule.priority,
+      day: nr.day.trim(),
+      type: nr.type,
+      anki_target: nr.anki_target,
+      seterra_target_seconds: nr.seterra_mins * 60,
+      duolingo_target_seconds: nr.duolingo_mins * 60,
+      gaming_cap_seconds: nr.gaming_cap_hours * 3600,
+      earn_rate: nr.earn_rate,
+      priority: nr.priority,
+      start_hour: nr.start_hour !== '' ? parseInt(nr.start_hour) : null,
+      end_hour: nr.end_hour !== '' ? parseInt(nr.end_hour) : null,
     })
     setNewRule(BLANK_RULE)
     setShowRuleForm(false)
@@ -299,6 +339,20 @@ export default function WatchDashboard() {
     setBusy(true)
     await fetch(`/api/poimenas/rules/${id}`, { method: 'DELETE' })
     await fetchRules(); await fetchStatus(); await fetchLogs()
+    setBusy(false)
+  }
+
+  async function handleApproveExtension(id: number) {
+    setBusy(true)
+    await post(`extension/${id}/approve`, {})
+    await fetchStatus(); await fetchLogs()
+    setBusy(false)
+  }
+
+  async function handleDenyExtension(id: number) {
+    setBusy(true)
+    await post(`extension/${id}/deny`, {})
+    await fetchStatus(); await fetchLogs()
     setBusy(false)
   }
 
@@ -324,8 +378,22 @@ export default function WatchDashboard() {
     setBusy(false)
   }
 
-  const t = status?.today
+  // ── Calendar helpers ──────────────────────────────────────────────────────
+
+  const todayISO = new Date().toISOString().split('T')[0]
+
+  function rulesForDay(day: string): RuleRecord[] {
+    return rules
+      .filter(r => r.day === day || (day === todayISO && r.day === todayISO))
+      .sort((a, b) => b.priority - a.priority)
+  }
+
+  function defaultRules(): RuleRecord[] {
+    return rules.filter(r => r.day === 'default').sort((a, b) => b.priority - a.priority)
+  }
+
   const nr = newRule
+  const t  = status?.today
 
   // ── Render ────────────────────────────────────────────────────────────────
 
@@ -363,6 +431,39 @@ export default function WatchDashboard() {
         </div>
       )}
 
+      {/* Extension request — shown prominently when pending */}
+      {status?.pending_extension && status.pending_extension.status === 'pending' && (
+        <div className="border border-amber-400/30 bg-amber-900/15 px-5 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm font-medium text-amber-400">Extension Request</div>
+              <div className="text-xs text-[#FAF7F0]/50 mt-0.5">
+                {status.pending_extension.duration_minutes} min
+                {status.pending_extension.reason
+                  ? ` · "${status.pending_extension.reason}"`
+                  : ''}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleApproveExtension(status.pending_extension!.id)}
+                disabled={busy}
+                className="text-xs px-3 py-1.5 border border-green-400/40 text-green-400 hover:bg-green-900/30 disabled:opacity-25 transition-colors"
+              >
+                Approve
+              </button>
+              <button
+                onClick={() => handleDenyExtension(status.pending_extension!.id)}
+                disabled={busy}
+                className="text-xs px-3 py-1.5 border border-red-400/40 text-red-400 hover:bg-red-900/30 disabled:opacity-25 transition-colors"
+              >
+                Deny
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* System */}
       <div>
         <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">System</p>
@@ -392,11 +493,10 @@ export default function WatchDashboard() {
               {status.rule
                 ? `${RULE_LABELS[status.rule.type]} · ${status.rule.day}`
                 : 'No rule active'}
-              {status.reason === 'bypass'
-                ? ' · daily bypass active'
+              {status.reason === 'daily_bypass' ? ' · daily bypass active'
+                : status.reason === 'extension' ? ' · extension active'
                 : status.reason && status.reason !== 'prerequisite'
-                  ? ` · ${status.reason}`
-                  : ''}
+                  ? ` · ${status.reason}` : ''}
             </div>
           </div>
           <div className="flex gap-2">
@@ -428,8 +528,56 @@ export default function WatchDashboard() {
             <StatCard label="Duolingo" value={t.duolingo_active_seconds} target={t.duolingo_target_seconds} asTime />
             <StatCard label="Gaming" value={t.gaming_seconds} target={t.gaming_cap_seconds ?? 0} asTime />
           </div>
+          {procStats.length > 0 && (
+            <div className="mt-2 border border-[#D4AF37]/10 divide-y divide-[#D4AF37]/06">
+              {procStats.map(p => (
+                <div key={p.process} className="flex items-center justify-between px-4 py-1.5 text-xs">
+                  <span className="text-[#FAF7F0]/40 font-mono">{p.process}</span>
+                  <span className="text-[#FAF7F0]/30">{fmt(p.seconds)}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
+
+      {/* Calendar */}
+      <div>
+        <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">Week Schedule</p>
+        <div className="grid grid-cols-7 gap-1">
+          {WEEKDAYS.map(day => {
+            const dayRules = rulesForDay(day)
+            const defs = dayRules.length === 0 ? defaultRules() : []
+            const all = [...dayRules, ...defs]
+            const isToday = new Date().toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase() === day
+            return (
+              <div
+                key={day}
+                className={`p-2 border text-center ${isToday ? 'border-[#D4AF37]/30 bg-[#D4AF37]/05' : 'border-[#D4AF37]/08'}`}
+              >
+                <div className={`text-xs uppercase tracking-wide mb-1.5 ${isToday ? 'text-[#D4AF37]/70' : 'text-[#FAF7F0]/30'}`}>
+                  {day}
+                </div>
+                {all.length === 0 ? (
+                  <span className="text-[10px] text-[#FAF7F0]/15">—</span>
+                ) : all.map(r => (
+                  <div key={r.id} className={`text-[10px] px-1 py-0.5 mb-0.5 rounded ${TYPE_COLOR[r.type] ?? ''} ${defs.includes(r) ? 'opacity-40' : ''}`}>
+                    {r.type === 'free' ? 'free' : r.type === 'earn_more' ? 'earn' : r.type.slice(0, 5)}
+                    {r.start_hour != null && (
+                      <span className="opacity-60 ml-0.5">{r.start_hour}-{r.end_hour}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+        {defaultRules().length > 0 && (
+          <p className="text-xs text-[#FAF7F0]/20 mt-2">
+            Default rule shown dimmed on days without a specific rule.
+          </p>
+        )}
+      </div>
 
       {/* Rules */}
       <div>
@@ -443,7 +591,6 @@ export default function WatchDashboard() {
           </button>
         </div>
 
-        {/* Rule list */}
         <div className="border border-[#D4AF37]/10 mb-3">
           {rules.length === 0 ? (
             <div className="px-4 py-3 text-sm text-[#FAF7F0]/25">No rules configured.</div>
@@ -454,8 +601,13 @@ export default function WatchDashboard() {
               style={{ borderTop: i > 0 ? '1px solid rgba(212,175,55,0.06)' : undefined }}
             >
               <span className="text-[#FAF7F0]/30 font-mono w-16 shrink-0 text-xs">{r.day}</span>
-              <span className="text-[#D4AF37]/70 w-20 shrink-0">{RULE_LABELS[r.type]}</span>
+              <span className={`text-xs px-1.5 py-0.5 shrink-0 ${TYPE_COLOR[r.type] ?? ''}`}>
+                {RULE_LABELS[r.type]}
+              </span>
               <span className="text-[#FAF7F0]/40 text-xs flex-1 truncate">{ruleDetail(r)}</span>
+              {r.start_hour != null && (
+                <span className="text-[#FAF7F0]/20 text-xs shrink-0">{r.start_hour}–{r.end_hour}h</span>
+              )}
               {r.priority > 0 && (
                 <span className="text-[#FAF7F0]/20 text-xs shrink-0">p{r.priority}</span>
               )}
@@ -470,15 +622,13 @@ export default function WatchDashboard() {
           ))}
         </div>
 
-        {/* New rule form */}
         {showRuleForm && (
           <form onSubmit={handleCreateRule} className="border border-[#D4AF37]/15 p-4 space-y-3">
             <div className="grid grid-cols-3 gap-2">
               <div>
                 <label className="text-xs text-[#FAF7F0]/30 block mb-1">Day</label>
                 <input
-                  type="text"
-                  value={nr.day}
+                  type="text" value={nr.day}
                   onChange={e => setNewRule(r => ({ ...r, day: e.target.value }))}
                   placeholder="default, mon, …"
                   className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm placeholder-[#FAF7F0]/20 focus:outline-none focus:border-[#D4AF37]/40"
@@ -500,22 +650,41 @@ export default function WatchDashboard() {
               <div>
                 <label className="text-xs text-[#FAF7F0]/30 block mb-1">Priority</label>
                 <input
-                  type="number"
-                  value={nr.priority}
+                  type="number" value={nr.priority}
                   onChange={e => setNewRule(r => ({ ...r, priority: parseInt(e.target.value) || 0 }))}
                   className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                 />
               </div>
             </div>
 
-            {/* Conditional fields */}
+            {/* Active hours (optional) */}
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-xs text-[#FAF7F0]/30 block mb-1">Start hour (0–23, optional)</label>
+                <input
+                  type="number" min="0" max="23" value={nr.start_hour}
+                  onChange={e => setNewRule(r => ({ ...r, start_hour: e.target.value }))}
+                  placeholder="all day"
+                  className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm placeholder-[#FAF7F0]/20 focus:outline-none focus:border-[#D4AF37]/40"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-[#FAF7F0]/30 block mb-1">End hour (exclusive)</label>
+                <input
+                  type="number" min="1" max="24" value={nr.end_hour}
+                  onChange={e => setNewRule(r => ({ ...r, end_hour: e.target.value }))}
+                  placeholder="all day"
+                  className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm placeholder-[#FAF7F0]/20 focus:outline-none focus:border-[#D4AF37]/40"
+                />
+              </div>
+            </div>
+
             {(nr.type === 'cap' || nr.type === 'earn_more') && (
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs text-[#FAF7F0]/30 block mb-1">Gaming cap (hours)</label>
                   <input
-                    type="number" step="0.5" min="0"
-                    value={nr.gaming_cap_hours}
+                    type="number" step="0.5" min="0" value={nr.gaming_cap_hours}
                     onChange={e => setNewRule(r => ({ ...r, gaming_cap_hours: parseFloat(e.target.value) || 0 }))}
                     className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                   />
@@ -524,8 +693,7 @@ export default function WatchDashboard() {
                   <div>
                     <label className="text-xs text-[#FAF7F0]/30 block mb-1">Earn rate (×)</label>
                     <input
-                      type="number" step="0.5" min="0.5"
-                      value={nr.earn_rate}
+                      type="number" step="0.5" min="0.5" value={nr.earn_rate}
                       onChange={e => setNewRule(r => ({ ...r, earn_rate: parseFloat(e.target.value) || 1 }))}
                       className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                     />
@@ -539,8 +707,7 @@ export default function WatchDashboard() {
                 <div>
                   <label className="text-xs text-[#FAF7F0]/30 block mb-1">Anki cards</label>
                   <input
-                    type="number" min="0"
-                    value={nr.anki_target}
+                    type="number" min="0" value={nr.anki_target}
                     onChange={e => setNewRule(r => ({ ...r, anki_target: parseInt(e.target.value) || 0 }))}
                     className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                   />
@@ -548,8 +715,7 @@ export default function WatchDashboard() {
                 <div>
                   <label className="text-xs text-[#FAF7F0]/30 block mb-1">Seterra (min)</label>
                   <input
-                    type="number" min="0"
-                    value={nr.seterra_mins}
+                    type="number" min="0" value={nr.seterra_mins}
                     onChange={e => setNewRule(r => ({ ...r, seterra_mins: parseInt(e.target.value) || 0 }))}
                     className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                   />
@@ -557,8 +723,7 @@ export default function WatchDashboard() {
                 <div>
                   <label className="text-xs text-[#FAF7F0]/30 block mb-1">Duolingo (min)</label>
                   <input
-                    type="number" min="0"
-                    value={nr.duolingo_mins}
+                    type="number" min="0" value={nr.duolingo_mins}
                     onChange={e => setNewRule(r => ({ ...r, duolingo_mins: parseInt(e.target.value) || 0 }))}
                     className="w-full bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-3 py-1.5 text-sm focus:outline-none focus:border-[#D4AF37]/40"
                   />
@@ -581,23 +746,19 @@ export default function WatchDashboard() {
       <div>
         <p className="text-xs uppercase tracking-widest text-[#D4AF37]/50 mb-3">Actions</p>
         <div className="space-y-3">
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={handleFreeDay}
-              disabled={busy}
-              className="px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] text-sm hover:bg-[#D4AF37]/10 disabled:opacity-40 transition-colors"
-            >
-              Free day (today)
-            </button>
-          </div>
+          <button
+            onClick={handleFreeDay}
+            disabled={busy}
+            className="px-4 py-2 border border-[#D4AF37]/30 text-[#D4AF37] text-sm hover:bg-[#D4AF37]/10 disabled:opacity-40 transition-colors"
+          >
+            Free day (today)
+          </button>
 
           <form onSubmit={handleTimedLock} className="flex gap-2">
             <input
-              type="number"
-              value={lockMins}
+              type="number" value={lockMins}
               onChange={e => setLockMins(e.target.value)}
-              placeholder="minutes"
-              min="1"
+              placeholder="minutes" min="1"
               className="w-28 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
             />
             <button
@@ -611,8 +772,7 @@ export default function WatchDashboard() {
 
           <form onSubmit={handleMessage} className="flex gap-2">
             <input
-              type="text"
-              value={msg}
+              type="text" value={msg}
               onChange={e => setMsg(e.target.value)}
               placeholder="Send a message to the widget…"
               className="flex-1 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
@@ -653,8 +813,7 @@ export default function WatchDashboard() {
         </div>
         <form onSubmit={handleAddDomain} className="flex gap-2">
           <input
-            type="text"
-            value={newDomain}
+            type="text" value={newDomain}
             onChange={e => setNewDomain(e.target.value)}
             placeholder="example.com"
             className="flex-1 bg-[#3a0000]/50 border border-[#D4AF37]/15 text-[#FAF7F0] px-4 py-2 text-sm font-mono placeholder-[#FAF7F0]/25 focus:outline-none focus:border-[#D4AF37]/40"
