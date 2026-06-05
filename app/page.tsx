@@ -94,16 +94,16 @@ export default function Home() {
             <h2 className="text-[#D4AF37] font-bold mb-2 text-lg drop-shadow">Experience</h2>
             <div className="space-y-2 text-[#FAF7F0] text-base font-medium">
               <div>
+                <span className="text-[#FAF7F0] font-bold drop-shadow">Amazon Web Services (AWS)</span> • SDE Intern
+                <br /> EC2 Fleet Optimization
+              </div>
+              <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">General Translation</span> • Software Engineering Intern
                 <br />100+ commits to open-source React/Next.js libraries • <a href="https://youtu.be/dVrSM2xUlDE?si=qc6hasSue8xb3bxr">GitHub HQ demo</a>
               </div>
               <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">Cisco Systems</span> • Software Engineering Intern
                 <br />Led 3-engineer team • Built RAG agent system • 90% dev time reduction
-              </div>
-              <div>
-                <span className="text-[#FAF7F0] font-bold drop-shadow">Effacita</span> • Founder
-                <br />Digital marketing consultancy • 400% review growth for clients
               </div>
             </div>
           </div>
