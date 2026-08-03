@@ -28,8 +28,8 @@ function RandomFact() {
   if (!fact) return null;
 
   return (
-    <div className="absolute bottom-24 right-6 z-20">
-      <p className="text-md text-[#FAF7F0]/80 text-right whitespace-nowrap">Random fact about me: {fact}</p>
+    <div className="relative z-20 px-6 pb-8 pointer-events-none lg:absolute lg:inset-x-6 lg:bottom-24 lg:px-0 lg:pb-0">
+      <p className="text-sm sm:text-base text-[#FAF7F0]/80 text-right text-balance">Random fact about me: {fact}</p>
     </div>
   );
 }
@@ -95,7 +95,7 @@ export default function Home() {
             <div className="space-y-2 text-[#FAF7F0] text-base font-medium">
               <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">Amazon Web Services (AWS)</span> • SDE Intern
-                <br /> EC2 Fleet Optimization
+                <br /> EC2 Fleet Optimization • Linear Programming & Mixed Integer Programming
               </div>
               <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">General Translation</span> • Software Engineering Intern
