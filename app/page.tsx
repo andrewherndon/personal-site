@@ -67,7 +67,7 @@ export default function Home() {
           </div>
 
           <p className="text-lg sm:text-xl text-[#FAF7F0] leading-relaxed font-medium drop-shadow">
-            Hi I&apos;m Andrew! Here&apos;s a brief summary of some of my professional accomplishments. I like to build stuff relating to language and finance.
+            Hi I&apos;m Andrew! Here&apos;s a brief summary of some of my professional accomplishments. I like to build stuff relating to language, finance, and reinforcement learning.
           </p>
 
           <div className="flex flex-wrap gap-4 sm:gap-8 text-lg sm:text-xl text-[#FAF7F0] font-semibold justify-center sm:justify-start">
@@ -119,16 +119,16 @@ export default function Home() {
                 <br />HackPrinceton Best Financial Hack • Credit card optimization algorithm
               </div>
               <div>
+                <a href="https://github.com/andrewherndon/btd3-rl">
+                  <span className="text-[#FAF7F0] font-bold drop-shadow">Bloons Tower Defense 3 Sim & RL Agent</span>
+                </a>
+                <br />Reverse-engineered game sim • MaskablePPO agent clears all 50 rounds
+              </div>
+              <div>
                 <a href="https://www.aigatech.org/projects">
                   <span className="text-[#FAF7F0] font-bold drop-shadow">AI@GT RAG Chatbot</span>
                 </a>
                 <br />Campus-wide assistant • Collaboration with NVIDIA engineers
-              </div>
-              <div>
-                <a href="https://linguality.app">
-                  <span className="text-[#FAF7F0] font-bold drop-shadow">Linguality</span>
-                </a>
-                <br />100+ language translation platform • Real-time processing
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function Home() {
             <div className="space-y-3 text-[#FAF7F0] text-base font-medium">
               <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">Georgia Institute of Technology</span>
-                <br />B.S. Computer Science • Intelligence & Devices • Class of 2027
+                <br />B.S. Computer Science • Intelligence & Devices • Class of 2028
               </div>
               <div>
                 <span className="text-[#FAF7F0] font-bold drop-shadow">Nanyang Technological University</span>
